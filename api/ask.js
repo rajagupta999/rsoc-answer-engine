@@ -194,10 +194,10 @@ Output only the JSON array.`;
 }
 function openerPrompt(v, lang, disclaimer, full) {
   const lengthLine = full
-    ? `Give a genuinely thorough, screen-filling FIRST answer in ${lang} — roughly 6-9 sentences across 2 short paragraphs. Really help: cover the key facts, real numbers/ranges, the main options, and what to watch out for, like the smartest, most helpful friend they have. No fluff and no salesy tone — every sentence earns its place by being useful.`
+    ? `Give a helpful FIRST answer in ${lang} that fits on ONE phone screen with no scrolling — about 4-6 sentences, roughly 600-850 characters MAX (never longer). Pack in the key facts, real numbers/ranges, and the main things to watch out for, like the smartest, most helpful friend they have. Tight and genuinely useful — no fluff, no padding, no salesy tone.`
     : `Answer in ${lang} in 2-4 tight, high-value sentences (no fluff, no salesy tone) — like the smartest, most helpful friend they have, with concrete facts and the key things to know.`;
   const kwLine = full
-    ? `INLINE HIGH-VALUE KEYWORDS: this first answer is our prime monetization surface, so naturally weave in and mark AT LEAST 3 (3-4 ideal) genuinely relevant, high-CPC commercial keywords as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug) — the most valuable buyer phrases for THIS specific question, the kind advertisers bid the most on. ALWAYS include at least 3 distinct marked phrases on this first answer. They must read naturally as part of a genuinely helpful answer, never forced or spammy.`
+    ? `INLINE HIGH-VALUE KEYWORDS: this first answer is our prime monetization surface, so naturally weave in and mark AT LEAST 3 (3-4 ideal) genuinely relevant, high-CPC commercial keywords. Use EXACTLY this syntax, ALWAYS with both an id and the visible phrase separated by a pipe: [[id|the exact visible phrase in ${lang}]] where id is a short lowercase ascii slug — e.g. [[roof_cost|roof replacement cost]]. NEVER write a marker without the "id|" part (never [[phrase]] alone). Include at least 3 distinct marked phrases — the most valuable buyer phrases for THIS question. They must read naturally, never forced or spammy.`
     : `INLINE KEYWORDS — sparingly: wrap at most 1-2 genuinely high-CPC, high-buyer-intent phrases as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Mark only truly high-value buyer terms; zero is fine — never force one.`;
   return `You are a genuinely helpful expert assistant whose #1 priority is to actually help the person. ${lengthLine}
 Topic: ${v.brief}
@@ -235,7 +235,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v9';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v10';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
@@ -260,6 +260,11 @@ export async function getOpener(region, vkey, locale, hook) {
 
 function normalizeReply(obj) {
   if (typeof obj.answer !== 'string') throw new Error('No answer');
+  // repair markers the model wrote without an id, e.g. [[phrase]] -> [[slug|phrase]], so they always highlight
+  obj.answer = obj.answer.replace(/\[\[([^\]|]+)\]\]/g, (m, phrase) => {
+    const slug = String(phrase).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 24) || 'kw';
+    return `[[${slug}|${String(phrase).trim()}]]`;
+  });
   obj.ads = obj.ads && typeof obj.ads === 'object' ? obj.ads : {};
   obj.suggest = Array.isArray(obj.suggest) ? obj.suggest : [];
   return obj;
