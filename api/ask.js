@@ -259,10 +259,24 @@ export async function track(scope, metric) {
 }
 
 
+// map the visitor's country (Vercel geo header) to a default region + locale
+function geoDefault(req) {
+  const cc = String((req.headers && (req.headers['x-vercel-ip-country'] || req.headers['x-country'])) || '').toUpperCase();
+  const M = {
+    US:['america','en-US'], CA:['america','en-US'], MX:['america','es-US'],
+    BR:['latam','pt-BR'], AR:['latam','es-419'], CL:['latam','es-419'], CO:['latam','es-419'], PE:['latam','es-419'], UY:['latam','es-419'], EC:['latam','es-419'],
+    GB:['eu','en-GB'], IE:['eu','en-GB'], DE:['eu','de-DE'], AT:['eu','de-DE'], CH:['eu','de-DE'], FR:['eu','fr-FR'], BE:['eu','fr-FR'], ES:['eu','en-GB'], IT:['eu','en-GB'], NL:['eu','en-GB'], SE:['eu','en-GB'], PL:['eu','en-GB'],
+    AE:['mena','ar'], SA:['mena','ar'], QA:['mena','ar'], KW:['mena','ar'], BH:['mena','ar'], OM:['mena','ar'], EG:['mena','ar'], JO:['mena','ar'], MA:['mena','ar'], LB:['mena','ar'],
+    JP:['apac','ja-JP'], IN:['apac','hi-IN'], SG:['apac','en-SG'], AU:['apac','en-SG'], NZ:['apac','en-SG'], MY:['apac','en-SG'], PH:['apac','en-SG'], HK:['apac','en-SG']
+  };
+  const m = M[cc] || ['america', 'en-US'];
+  return { country: cc || null, region: m[0], locale: m[1] };
+}
+
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     // allow a quick GET for the regions metadata (handy + cacheable)
-    if ((req.url || '').includes('/api/ask')) { res.status(200).json({ regions: publicRegions() }); return; }
+    if ((req.url || '').includes('/api/ask')) { res.status(200).json({ regions: publicRegions(), detected: geoDefault(req) }); return; }
   }
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
   try {
@@ -272,7 +286,7 @@ export default async function handler(req, res) {
     const action = body.action || 'ask';
     const { region, vertical, locale, hook, question, history, email, metric, scope } = body;
 
-    if (action === 'regions') { res.status(200).json({ regions: publicRegions() }); return; }
+    if (action === 'regions') { res.status(200).json({ regions: publicRegions(), detected: geoDefault(req) }); return; }
     if (action === 'lineup') {
       if (!region || !vertical || !locale) { res.status(400).json({ error: 'region, vertical, locale required' }); return; }
       res.status(200).json({ variants: await getLineup(region, vertical, locale) }); return;
