@@ -182,8 +182,10 @@ Write EVERYTHING in ${lang}.
 
 Produce 10 DISTINCT, punchy, aggressive-but-not-misleading ad hooks a person would click — use angles like cost/price, free/$0, eligibility ("do you qualify?"), savings amount, speed, curiosity ("most people don't know"), social proof, and 2026 timeliness. Vary the angles. Keep each compliant and honestly hedged (no false guarantees). ${disclaimer}
 
+Use REAL, well-known advertisers that actually operate in this market and vertical (brands a person there would recognize), with their REAL website domains — never invent fake brands or fake domains.
+
 Return STRICT JSON: an array of exactly 10 objects, each:
-{"hook":"the ad text (1-2 sentences, in ${lang})","head":"short image-overlay headline (in ${lang}, <=6 words)","adv":"plausible synthetic advertiser name","url":"www.display-url.com","cta":"button text (in ${lang}, 2-3 words)"}
+{"hook":"the ad text (1-2 sentences, in ${lang})","head":"short image-overlay headline (in ${lang}, <=6 words)","adv":"real recognizable advertiser name","url":"www.realbrand.com","cta":"button text (in ${lang}, 2-3 words)"}
 Output only the JSON array.`;
 }
 function openerPrompt(v, lang, disclaimer) {
@@ -193,10 +195,12 @@ Topic: ${v.brief}
 CRITICAL: Just answer the question directly. NEVER mention "the ad", "this ad", "the Facebook ad", that the person clicked anything, or describe/react to an ad ("it sounds like the ad is saying…" is forbidden). Respond as if the person simply asked you the question themselves.
 
 Only when a high-intent commercial phrase fits naturally, wrap it as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Use 0-2 markers; zero is fine. Never force one.
-For each id used, give one realistic, compelling synthetic sponsored ad. Provide 4-6 natural follow-up questions in ${lang}. Include a soft honest disclaimer where relevant (${disclaimer}).
+For each id used, give one realistic, compelling sponsored ad. Provide 4-6 natural follow-up questions in ${lang}. Include a soft honest disclaimer where relevant (${disclaimer}).
+
+ADVERTISER REALISM: Use a REAL, well-known advertiser that genuinely operates in this market and vertical (a brand a person there would recognize), and put its REAL public website in both "disp" and "url". "url" must be that advertiser's real homepage as an absolute https URL (e.g. https://www.humana.com). Do NOT invent fake domains or fake brands. If unsure of a deep link, link to the brand's real homepage. The advertiser name, headline and copy must read like that brand's own ad, localized to ${lang}.
 
 Return STRICT JSON only:
-{"answer":"... in ${lang} with optional [[id|phrase]] markers","ads":{"<id>":{"adv":"","disp":"www.url.com/x","url":"https://...","head":"","desc":"","cta":"","sitelinks":["",""]}},"suggest":["",""]}
+{"answer":"... in ${lang} with optional [[id|phrase]] markers","ads":{"<id>":{"adv":"Real brand name","disp":"www.realbrand.com","url":"https://www.realbrand.com","head":"","desc":"","cta":"","sitelinks":["",""]}},"suggest":["",""]}
 Output only the JSON object.`;
 }
 
@@ -216,7 +220,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v3';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v4';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
