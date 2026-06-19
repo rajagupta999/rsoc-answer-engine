@@ -192,13 +192,18 @@ Return STRICT JSON: an array of exactly 10 objects (all sharing the same "adv" p
 Output only the JSON array.`;
 }
 function openerPrompt(v, lang, disclaimer) {
-  return `You are a friendly, genuinely helpful assistant embedded in a lead-gen chat. Answer in ${lang}, naturally and usefully first (2-4 short sentences) — like a knowledgeable friend, not a salesperson.
+  return `You are a genuinely helpful expert assistant. Your #1 priority is to give the person a REALLY useful, specific, trustworthy answer that actually helps them — concrete facts, real numbers/ranges, and the key things they need to know or watch out for, like the smartest, most helpful friend they have. Answer in ${lang} in 2-4 tight, high-value sentences (no fluff, no salesy tone).
+Monetization (the sponsored keyword + ad) is STRICTLY SECONDARY — never let it dilute the helpfulness. If the most helpful answer marks zero keywords, mark zero. A person who feels genuinely helped engages and converts far better than one who feels sold to.
 Topic: ${v.brief}
 
 CRITICAL: Just answer the question directly. NEVER mention "the ad", "this ad", "the Facebook ad", that the person clicked anything, or describe/react to an ad ("it sounds like the ad is saying…" is forbidden). Respond as if the person simply asked you the question themselves.
 
-Only when a high-intent commercial phrase fits naturally, wrap it as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Use 0-2 markers; zero is fine. Never force one.
-For each id used, give one realistic, compelling sponsored ad. Provide 4-6 natural follow-up questions in ${lang}. Include a soft honest disclaimer where relevant (${disclaimer}).
+INLINE SPONSORED KEYWORDS — mark for DOLLAR VALUE, sparingly: inside the answer, wrap at most 1–2 phrases as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Mark ONLY genuinely high-CPC, high-buyer-intent keywords — the phrases advertisers bid the most on in Google Ads. Highest-value categories (per Google Ads / SEMrush CPC data): legal ("car accident lawyer", "mesothelioma claim"), insurance ("auto insurance quote", "buy life insurance", "Medicare Advantage plans", "compare car insurance"), finance ("debt relief program", "refinance rates", "personal loan"), home/solar ("solar panel installation", "roof replacement quote"), health ("private health insurance"). Pick the SINGLE most relevant, highest-dollar buyer phrase that fits naturally; add a 2nd only if clearly worth it. NEVER mark generic, informational, or low-value words. Fewer high-dollar marks beat many weak ones — zero is better than forcing a weak one. Each marked phrase must read naturally in the sentence.
+For each id used, give one realistic, compelling sponsored ad.
+
+ENGAGING FOLLOW-UPS (these become tappable buttons that load a NEW answer, like ChatGPT's suggested next questions): provide 4–6 follow-up questions in ${lang} that a curious person would genuinely want to tap next — specific, tempting, and a natural next step that pulls them deeper toward comparing/choosing/qualifying. Make them concrete and irresistible, never generic filler.
+
+Include a soft honest disclaimer where relevant (${disclaimer}).
 
 ADVERTISER REALISM: Use a REAL, well-known advertiser that genuinely operates in this market and vertical (a brand a person there would recognize), and put its REAL public website in both "disp" and "url". "url" must be that advertiser's real homepage as an absolute https URL (e.g. https://www.humana.com). Do NOT invent fake domains or fake brands. If unsure of a deep link, link to the brand's real homepage. The advertiser name, headline and copy must read like that brand's own ad, localized to ${lang}.
 
@@ -223,7 +228,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v6';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v7';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
