@@ -6,81 +6,114 @@
  * not legally-vetted ad inventory.
  */
 
-/* ---------------- regions / verticals / locales ---------------- */
+/* ---------------- markets (by language) / verticals ----------------
+ * Each market is one language/locale with culturally-appropriate verticals.
+ * `people` is the nationality adjective injected into AI image prompts so the
+ * Facebook creative matches the audience (e.g. a Japanese family for ja). */
 export const REGIONS = {
-  america: {
-    label: 'Americas (US)', dir: 'ltr', currency: 'USD',
-    locales: [{ code: 'en-US', name: 'English' }, { code: 'es-US', name: 'US Spanish' }],
+  en_us: {
+    label: 'English (US)', dir: 'ltr', currency: 'USD', people: 'American',
+    locales: [{ code: 'en-US', name: 'English' }],
     verticals: {
-      medicare: { label: 'Medicare', color: '#1877f2',
+      medicare: { label: 'Medicare', color: '#1877f2', photo: 'medicare',
         brief: '2026 US Medicare Advantage plans for seniors: $0-premium plans, dental/vision/hearing, grocery/OTC cards, Part B giveback, drug plans, enrollment windows. Advertisers like Humana, Aetna, UnitedHealthcare.',
         disclaimer: 'Not connected with or endorsed by the U.S. government or the federal Medicare program. Benefits vary by plan and area.' },
-      roofing: { label: 'Roofing', color: '#e8590c',
+      roofing: { label: 'Roofing', color: '#e8590c', photo: 'roofing',
         brief: 'US residential roof replacement in 2026: cost, free inspections, financing, storm/insurance claims, metal vs shingle. Advertisers like Modernize, Angi, Erie Metal Roofs.',
         disclaimer: 'Quotes are provided by independent local contractors. Pricing and availability vary by area.' },
-      debt: { label: 'Debt Relief', color: '#2b8a3e',
+      debt: { label: 'Debt Relief', color: '#2b8a3e', photo: 'debt',
         brief: 'US unsecured debt relief: settlement vs consolidation, no upfront fees, credit impact, eligibility, timelines. Advertisers like National Debt Relief, Freedom Debt Relief, Achieve.',
         disclaimer: 'Debt relief programs are not available in all states; results vary; enrollment may affect credit. Not legal or financial advice.' }
     }
   },
-  latam: {
-    label: 'South America', dir: 'ltr', currency: 'local',
-    locales: [{ code: 'es-419', name: 'Latin American Spanish' }, { code: 'pt-BR', name: 'Brazilian Portuguese' }],
+  en_gb: {
+    label: 'English (UK)', dir: 'ltr', currency: 'GBP', people: 'British',
+    locales: [{ code: 'en-GB', name: 'British English' }],
     verticals: {
-      solar: { label: 'Solar', color: '#f59f00',
-        brief: 'Residential rooftop solar panels for homeowners in South America: cutting the electricity bill, financing/installments, government incentives, free quotes. Synthetic local installer advertisers.',
-        disclaimer: 'Savings depend on consumption, roof and local tariffs. Quotes from independent installers. Demo content.' },
-      credito: { label: 'Credit', color: '#1971c2',
-        brief: 'Personal credit / debt consolidation for consumers in South America: lower monthly payments, single installment, eligibility check without affecting score. Synthetic local lender advertisers.',
-        disclaimer: 'Subject to credit approval; terms vary by provider and country. Not financial advice. Demo content.' },
-      ingles: { label: 'English Courses', color: '#7048e8',
-        brief: 'Online English courses for adults in South America: career advancement, conversational fluency, free trial lesson, flexible plans. Synthetic ed-tech advertisers.',
-        disclaimer: 'Results vary by effort and plan. Demo content.' }
+      energy: { label: 'Boiler & Insulation Grants', color: '#1971c2', photo: 'solar',
+        brief: 'UK home-energy upgrades for homeowners in 2026: government grants for boilers, insulation and heat pumps, lower energy bills, eligibility check, free home survey. Synthetic UK installer advertisers.',
+        disclaimer: 'Grant eligibility depends on property and circumstances. Quotes from independent installers. Demo content.' },
+      carins: { label: 'Car Insurance', color: '#4263eb', photo: 'insurance',
+        brief: 'UK car insurance comparison: switch and save, compare quotes from top insurers in minutes, multi-car and black-box options, free quote. Synthetic comparison-site advertisers.',
+        disclaimer: 'Savings vary by driver profile and vehicle. Demo content.' },
+      life50: { label: 'Over-50s Life Cover', color: '#5f3dc4', photo: 'life',
+        brief: 'UK over-50s guaranteed life insurance and funeral plans: fixed monthly premiums, no medical needed, cash lump sum for loved ones, optional gift on joining. Synthetic insurer advertisers.',
+        disclaimer: 'Over time premiums may exceed the payout; terms apply. Demo content.' }
     }
   },
-  eu: {
-    label: 'Europe', dir: 'ltr', currency: 'EUR',
-    locales: [{ code: 'en-GB', name: 'British English' }, { code: 'de-DE', name: 'German' }, { code: 'fr-FR', name: 'French' }],
+  fr: {
+    label: 'Français', dir: 'ltr', currency: 'EUR', people: 'French',
+    locales: [{ code: 'fr-FR', name: 'French' }],
     verticals: {
-      solar: { label: 'Solar & Heat Pumps', color: '#f59f00',
-        brief: 'Home solar panels and heat pumps for European homeowners: energy-bill savings, government grants/subsidies, financing, free home assessment. Synthetic EU installer advertisers.',
-        disclaimer: 'Savings and grant eligibility vary by country and household. Quotes from independent installers. Demo content.' },
-      ev: { label: 'EV Leasing', color: '#0ca678',
-        brief: 'Electric-vehicle leasing for Europe: low monthly lease, government EV incentives, all-inclusive deals, instant quote. Synthetic leasing advertisers.',
-        disclaimer: 'Offers subject to status and country. Demo content.' },
-      insurance: { label: 'Insurance', color: '#4263eb',
-        brief: 'Home and auto insurance comparison for Europe: switch and save, compare top insurers in minutes, free quote. Synthetic comparison-site advertisers.',
-        disclaimer: 'Savings vary by profile and country. Demo content.' }
+      solaire: { label: 'Panneaux Solaires', color: '#f59f00', photo: 'solar',
+        brief: 'Residential solar panels for French homeowners: cut the electricity bill, government aid (MaPrimeRénov/prime autoconsommation), financing, free home assessment. Synthetic French installer advertisers.',
+        disclaimer: 'Savings and aid depend on the home and consumption. Quotes from independent installers. Demo content.' },
+      ve: { label: 'Voiture Électrique', color: '#0ca678', photo: 'ev',
+        brief: 'Electric-vehicle leasing (LOA/LLD) for France: low monthly payment, government bonus/social leasing, all-inclusive offers, instant quote. Synthetic leasing advertisers.',
+        disclaimer: 'Offers subject to status and eligibility. Demo content.' },
+      mutuelle: { label: 'Mutuelle Santé', color: '#1098ad', photo: 'health',
+        brief: 'Top-up health insurance (mutuelle) for France: compare plans, senior and family cover, better reimbursement, free quote in minutes. Synthetic mutuelle advertisers.',
+        disclaimer: 'Cover and price vary by profile. Demo content.' }
     }
   },
-  mena: {
-    label: 'Middle East', dir: 'rtl', currency: 'AED',
-    locales: [{ code: 'ar', name: 'Arabic' }, { code: 'en-AE', name: 'English' }],
+  de: {
+    label: 'Deutsch', dir: 'ltr', currency: 'EUR', people: 'German',
+    locales: [{ code: 'de-DE', name: 'German' }],
     verticals: {
-      realestate: { label: 'Property Investment', color: '#c2255c',
-        brief: 'Off-plan and ready property investment in the Gulf (e.g. Dubai): flexible payment plans, high rental yields, residency-linked options, free consultation. Synthetic developer/broker advertisers.',
-        disclaimer: 'Property values can go down as well as up. Not investment advice. Demo content.' },
-      health: { label: 'Private Health', color: '#1098ad',
-        brief: 'Private health insurance for residents and expats in the Gulf: family cover, compare plans, fast approval, free quote. Synthetic insurer advertisers.',
-        disclaimer: 'Cover and eligibility vary by plan and emirate/country. Demo content.' },
-      gold: { label: 'Gold Savings', color: '#e8950c',
-        brief: 'Gold savings/investment plans in the Middle East: buy and store gold, monthly savings plans, hedge against inflation. Synthetic advertisers.',
-        disclaimer: 'Gold prices fluctuate; capital at risk. Not investment advice. Demo content.' }
+      solar: { label: 'Solar & Wärmepumpe', color: '#f59f00', photo: 'solar',
+        brief: 'Solar panels and heat pumps for German homeowners: lower energy bills, government subsidies (KfW/BAFA), financing, free home assessment. Synthetic German installer advertisers.',
+        disclaimer: 'Savings and subsidy eligibility vary by household. Quotes from independent installers. Demo content.' },
+      eauto: { label: 'E-Auto Leasing', color: '#0ca678', photo: 'ev',
+        brief: 'Electric-vehicle leasing for Germany: low monthly lease, all-inclusive deals, instant quote, business and private options. Synthetic leasing advertisers.',
+        disclaimer: 'Offers subject to status. Demo content.' },
+      versicherung: { label: 'Versicherungen', color: '#4263eb', photo: 'insurance',
+        brief: 'Home and car insurance comparison for Germany: switch and save, compare top insurers in minutes, free quote. Synthetic comparison-site advertisers.',
+        disclaimer: 'Savings vary by profile. Demo content.' }
     }
   },
-  apac: {
-    label: 'Asia-Pacific', dir: 'ltr', currency: 'local',
-    locales: [{ code: 'en-SG', name: 'English' }, { code: 'ja-JP', name: 'Japanese' }, { code: 'hi-IN', name: 'Hindi' }],
+  ja: {
+    label: '日本語', dir: 'ltr', currency: 'JPY', people: 'Japanese',
+    locales: [{ code: 'ja-JP', name: 'Japanese' }],
     verticals: {
-      life: { label: 'Life Insurance', color: '#5f3dc4',
-        brief: 'Life and term insurance across Asia-Pacific: affordable cover for families, compare plans, instant online quote, tax benefits where applicable. Synthetic insurer advertisers.',
-        disclaimer: 'Cover and tax treatment vary by country and plan. Demo content.' },
-      tutoring: { label: 'Tutoring', color: '#1c7ed6',
-        brief: 'Online tutoring and exam prep across Asia-Pacific: top scores, expert tutors, free trial class, flexible schedules. Synthetic ed-tech advertisers.',
-        disclaimer: 'Results vary by student. Demo content.' },
-      travel: { label: 'Travel Deals', color: '#0c8599',
-        brief: 'Discounted travel and flight/hotel deals across Asia-Pacific: limited-time fares, bundle and save, flexible booking. Synthetic OTA advertisers.',
+      seimei: { label: '生命保険 (Life)', color: '#5f3dc4', photo: 'life',
+        brief: 'Life and medical insurance for families in Japan: affordable cover, compare plans, instant online quote, coverage for medical and cancer. Synthetic insurer advertisers.',
+        disclaimer: 'Cover and terms vary by plan. Demo content.' },
+      eikaiwa: { label: '英会話 (English)', color: '#1c7ed6', photo: 'ingles',
+        brief: 'Online English conversation lessons (eikaiwa) for adults in Japan: speak confidently, native and bilingual tutors, free trial lesson, flexible schedule. Synthetic ed-tech advertisers.',
+        disclaimer: 'Results vary by effort and plan. Demo content.' },
+      ryoko: { label: '旅行 (Travel)', color: '#0c8599', photo: 'travel',
+        brief: 'Discounted travel, flight and hotel deals for travellers from Japan: limited-time fares, bundle and save, flexible booking. Synthetic OTA advertisers.',
         disclaimer: 'Prices and availability change. Demo content.' }
+    }
+  },
+  hi: {
+    label: 'हिन्दी', dir: 'ltr', currency: 'INR', people: 'Indian',
+    locales: [{ code: 'hi-IN', name: 'Hindi' }],
+    verticals: {
+      jeevan: { label: 'जीवन बीमा (Life)', color: '#5f3dc4', photo: 'life',
+        brief: 'Term and life insurance for families in India: high cover for a low premium, compare plans, instant online quote, tax benefits under 80C. Synthetic insurer advertisers.',
+        disclaimer: 'Cover and tax treatment vary by plan and law. Demo content.' },
+      tuition: { label: 'ट्यूशन (Tutoring)', color: '#1c7ed6', photo: 'tutoring',
+        brief: 'Online tutoring and exam prep (JEE/NEET/board) for students in India: expert tutors, top scores, free demo class, flexible batches. Synthetic ed-tech advertisers.',
+        disclaimer: 'Results vary by student. Demo content.' },
+      loan: { label: 'पर्सनल लोन (Loan)', color: '#1971c2', photo: 'debt',
+        brief: 'Personal loans for consumers in India: quick approval, low EMI, minimal documents, instant eligibility check. Synthetic lender advertisers.',
+        disclaimer: 'Subject to credit approval; terms vary by lender. Not financial advice. Demo content.' }
+    }
+  },
+  es: {
+    label: 'Español', dir: 'ltr', currency: 'EUR', people: 'Spanish',
+    locales: [{ code: 'es-ES', name: 'Spanish' }],
+    verticals: {
+      solar: { label: 'Energía Solar', color: '#f59f00', photo: 'solar',
+        brief: 'Residential solar panels for homeowners in Spain: cut the electricity bill, subsidies and IBI rebates, financing, free assessment. Synthetic installer advertisers.',
+        disclaimer: 'Savings and subsidies depend on the home and consumption. Quotes from independent installers. Demo content.' },
+      seguro: { label: 'Seguros', color: '#4263eb', photo: 'insurance',
+        brief: 'Home and car insurance comparison for Spain: switch and save, compare top insurers in minutes, free quote. Synthetic comparison-site advertisers.',
+        disclaimer: 'Savings vary by profile. Demo content.' },
+      ingles: { label: 'Cursos de Inglés', color: '#7048e8', photo: 'ingles',
+        brief: 'Online English courses for adults in Spain: advance your career, conversational fluency, free trial lesson, flexible plans. Synthetic ed-tech advertisers.',
+        disclaimer: 'Results vary by effort and plan. Demo content.' }
     }
   }
 };
@@ -183,7 +216,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v2';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v3';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
@@ -242,8 +275,8 @@ export async function ask(region, vkey, locale, question, history) {
 export function publicRegions() {
   const out = {};
   for (const [rk, r] of Object.entries(REGIONS)) {
-    out[rk] = { label: r.label, dir: r.dir, currency: r.currency, locales: r.locales,
-      verticals: Object.fromEntries(Object.entries(r.verticals).map(([vk, v]) => [vk, { label: v.label, color: v.color, disclaimer: v.disclaimer }])) };
+    out[rk] = { label: r.label, dir: r.dir, currency: r.currency, people: r.people, locales: r.locales,
+      verticals: Object.fromEntries(Object.entries(r.verticals).map(([vk, v]) => [vk, { label: v.label, color: v.color, photo: v.photo, disclaimer: v.disclaimer }])) };
   }
   return out;
 }
@@ -266,13 +299,15 @@ export async function track(scope, metric) {
 function geoDefault(req) {
   const cc = String((req.headers && (req.headers['x-vercel-ip-country'] || req.headers['x-country'])) || '').toUpperCase();
   const M = {
-    US:['america','en-US'], CA:['america','en-US'], MX:['america','es-US'],
-    BR:['latam','pt-BR'], AR:['latam','es-419'], CL:['latam','es-419'], CO:['latam','es-419'], PE:['latam','es-419'], UY:['latam','es-419'], EC:['latam','es-419'],
-    GB:['eu','en-GB'], IE:['eu','en-GB'], DE:['eu','de-DE'], AT:['eu','de-DE'], CH:['eu','de-DE'], FR:['eu','fr-FR'], BE:['eu','fr-FR'], ES:['eu','en-GB'], IT:['eu','en-GB'], NL:['eu','en-GB'], SE:['eu','en-GB'], PL:['eu','en-GB'],
-    AE:['mena','ar'], SA:['mena','ar'], QA:['mena','ar'], KW:['mena','ar'], BH:['mena','ar'], OM:['mena','ar'], EG:['mena','ar'], JO:['mena','ar'], MA:['mena','ar'], LB:['mena','ar'],
-    JP:['apac','ja-JP'], IN:['apac','hi-IN'], SG:['apac','en-SG'], AU:['apac','en-SG'], NZ:['apac','en-SG'], MY:['apac','en-SG'], PH:['apac','en-SG'], HK:['apac','en-SG']
+    US:['en_us','en-US'], CA:['en_us','en-US'],
+    GB:['en_gb','en-GB'], IE:['en_gb','en-GB'], AU:['en_gb','en-GB'], NZ:['en_gb','en-GB'], SG:['en_gb','en-GB'], ZA:['en_gb','en-GB'],
+    FR:['fr','fr-FR'], BE:['fr','fr-FR'], LU:['fr','fr-FR'],
+    DE:['de','de-DE'], AT:['de','de-DE'], CH:['de','de-DE'],
+    JP:['ja','ja-JP'],
+    IN:['hi','hi-IN'],
+    ES:['es','es-ES'], MX:['es','es-ES'], AR:['es','es-ES'], CL:['es','es-ES'], CO:['es','es-ES'], PE:['es','es-ES'], UY:['es','es-ES'], EC:['es','es-ES'], VE:['es','es-ES']
   };
-  const m = M[cc] || ['america', 'en-US'];
+  const m = M[cc] || ['en_us', 'en-US'];
   return { country: cc || null, region: m[0], locale: m[1] };
 }
 
