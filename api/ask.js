@@ -176,14 +176,15 @@ function parseJSON(raw) {
 
 /* ---------------- prompts ---------------- */
 function hooksPrompt(v, lang, disclaimer) {
-  return `You write SHORT, scroll-stopping Facebook ad hooks for a lead-gen content page. DEMO use.
+  return `You write scroll-stopping Facebook posts for a content page (a helpful guide/hub we own). They must feel like genuinely INTERESTING, native posts a real person stops to read — NOT obvious ads. DEMO use.
 Vertical: ${v.brief}
 Write EVERYTHING in ${lang}.
 
-THE ONLY GOAL IS THE CLICK. Each "hook" is ONE punchy line — aim for 5–12 words, hard limit ~14 words. Think top 1% Facebook ad copy: a hook that stops the thumb. Lead with the most clickable element — a number, "$0", "Do you qualify?", a surprising claim, a bold question, a curiosity gap.
-HARD RULES: no multi-sentence paragraphs. No explanations. NO disclaimers, brand names, or legal hedges inside the hook (those live on the landing page, not the ad). Stay honest — no flat-out false guarantees — but punchy curiosity beats completeness. If a hook feels like a full sentence of information, it's too long; cut it.
+GOAL: make a real person STOP scrolling and feel curious, surprised, or something real. The best Facebook creative is a hook, not a sales pitch. Each "hook" is ONE short line (~6–14 words). Win with angles like: a surprising fact or number, a relatable everyday moment, a curiosity gap ("Most people over 50 don't realise this…"), a question that makes you think, a gentle myth-bust, light social proof ("Thousands quietly switched in 2026"), a "nobody tells you…" insight.
 
-Produce 10 DISTINCT hooks, each a different angle: $0/price, "Do you qualify?", a savings number, "in minutes", "most people don't know…", social proof, 2026 urgency, a provocative question, a myth-bust, a curiosity tease.
+BANNED — this copy reads as a cheap ad and kills engagement, NEVER use it as the hook: "Get a free quote today", "Sign up now", "Click here", "Limited time offer", "Call now", "Act fast", "Apply today", or any generic call-to-action-as-headline. The call-to-action belongs ONLY on the button (cta), never in the hook. No disclaimers, brand names, or legal hedges in the hook. Stay honest (no false guarantees) but lead with intrigue and value, not selling.
+
+Produce 10 DISTINCT hooks, each a clearly different compelling angle: surprising stat, relatable story opener, curiosity gap, provocative question, myth-bust, social proof, a "nobody tells you…" insight, a number/price reveal, a what-if, a did-you-know. They must read like posts people would actually engage with — if one sounds like an ad, rewrite it.
 
 WHOSE AD THIS IS: This Facebook ad is run by OUR OWN content page for this topic (a helpful guide / comparison hub we own), NOT by any insurer, lender or advertiser. Do NOT use a real company/brand (no Humana, Aetna, GEICO, LIC, etc.) as the page. Invent ONE neutral, trustworthy, ownable content-brand page name fitting ${lang} and this vertical (a "guide", "hub", "finder" vibe) and use that SAME page name in "adv" for ALL 10. Put OUR OWN content-site domain in "url" for all 10 — never a real advertiser's domain. Real advertisers appear only later, inside the chat.
 
@@ -228,7 +229,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v7';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v8';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
