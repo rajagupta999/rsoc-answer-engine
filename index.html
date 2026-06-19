@@ -117,12 +117,12 @@
 <body>
   <header>
     <h1>RSOC Answer Engine <span class="live">Live · Localized</span></h1>
-    <p class="sub">A Facebook ad poses a question; the click lands in a helpful chat that answers and surfaces a sponsored result when it fits. Pick a region, vertical, language and ad creative — content is generated per locale and cached for instant load.</p>
+    <p class="sub">A Facebook ad poses a question; the click lands in a helpful chat that answers and surfaces a sponsored result when it fits. Pick a language market, vertical and ad creative — every hook, answer and image is generated for that language and cached for instant load.</p>
     <div class="demo-flag">Demo for AFS review: the sponsored results are AI-generated, localized placeholders standing in for the live AdSense for Search feed that would populate these slots.</div>
     <div class="controls">
-      <div class="cg"><span class="cl">Region</span><div class="tabs" id="regionTabs"></div></div>
+      <div class="cg"><span class="cl">Language / Market</span><div class="tabs" id="regionTabs"></div></div>
       <div class="cg"><span class="cl">Vertical</span><div class="tabs" id="vertTabs"></div></div>
-      <div class="cg"><span class="cl">Language</span><select id="localeSel"></select></div>
+      <div class="cg" style="display:none"><span class="cl">Language</span><select id="localeSel"></select></div>
       <div class="cg"><span class="cl">Ad creative</span><select id="adSel"></select></div>
     </div>
   </header>
@@ -160,26 +160,31 @@ let history=[], adStore={}, adByMsg={}, msgN=0, userTurns=0, busy=false, leadOff
 
 const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
 // compliant lifestyle prompts (no claims, no logos, no on-image text) -> AI-generated FB creative
+// {P} = the market's nationality adjective (American/British/Japanese/Indian…) so
+// the AI creative matches the audience. Object/scenery prompts omit {P}.
 const PHOTO={
- medicare:"a happy senior couple smiling together at home, warm natural light, candid lifestyle photography",
- roofing:"a beautiful modern suburban house with a brand new roof under a clear blue sky, professional real estate photography",
- debt:"a relieved smiling person reviewing personal finances on a laptop at a bright kitchen table, lifestyle photography",
- solar:"a modern home with sleek rooftop solar panels gleaming under a sunny sky, clean architectural photography",
- credito:"a happy young family reviewing finances together at home, warm light, lifestyle photography",
- ingles:"a confident smiling young professional studying online with headphones and a laptop, bright modern setting",
- ev:"a sleek electric car parked in the driveway of a modern home at golden hour, automotive photography",
- insurance:"a happy family standing proudly in front of their home and car on a sunny day, lifestyle photography",
+ medicare:"a happy {P} senior couple smiling together at home, warm natural light, candid lifestyle photography",
+ roofing:"a beautiful modern {P} suburban house with a brand new roof under a clear blue sky, professional real estate photography",
+ debt:"a relieved smiling {P} person reviewing personal finances on a laptop at a bright kitchen table, lifestyle photography",
+ solar:"a modern {P} home with sleek rooftop solar panels gleaming under a sunny sky, clean architectural photography",
+ credito:"a happy young {P} family reviewing finances together at home, warm light, lifestyle photography",
+ ingles:"a confident smiling young {P} professional studying online with headphones and a laptop, bright modern setting",
+ ev:"a sleek electric car parked in the driveway of a modern {P} home at golden hour, automotive photography",
+ insurance:"a happy {P} family standing proudly in front of their home and car on a sunny day, lifestyle photography",
  realestate:"a luxurious modern apartment interior with floor to ceiling windows and a city skyline view, architectural photography",
- health:"a happy healthy diverse family outdoors on a bright day, wellness lifestyle photography",
+ health:"a happy healthy {P} family outdoors on a bright day, wellness lifestyle photography",
  gold:"a neat stack of shiny gold bars and gold coins on a clean reflective surface, premium product photography",
- life:"a loving family with two children relaxing happily in a cozy bright living room, lifestyle photography",
- tutoring:"a smiling student learning happily with an online tutor on a laptop, bright study room",
- travel:"a stunning tropical beach resort with palm trees and turquoise water, vibrant travel photography"
+ life:"a loving {P} family with two children relaxing happily in a cozy bright living room, lifestyle photography",
+ tutoring:"a smiling {P} student learning happily with an online tutor on a laptop, bright study room",
+ travel:"a happy {P} couple enjoying a stunning tropical beach resort with palm trees and turquoise water, vibrant travel photography"
 };
 function photoUrl(vk){
-  const lbl=(REG[region]&&REG[region].verticals[vk]&&REG[region].verticals[vk].label)||vk;
-  const p=PHOTO[vk]||(lbl+", professional lifestyle photography");
-  const seed=Math.abs([...vk].reduce((h,ch)=>(h*31+ch.charCodeAt(0))|0,7))%100000;
+  const V=REG[region]&&REG[region].verticals[vk];
+  const ptype=(V&&V.photo)||vk;
+  const people=(REG[region]&&REG[region].people)||'';
+  let p=PHOTO[ptype]||((V&&V.label||vk)+", professional lifestyle photography");
+  p=p.replace(/\{P\}/g, people).replace(/\s{2,}/g,' ');
+  const seed=Math.abs([...(region+vk)].reduce((h,ch)=>(h*31+ch.charCodeAt(0))|0,7))%100000;
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(p+', photorealistic, high quality, no text, no watermark')}?width=1200&height=628&nologo=true&seed=${seed}`;
 }
 const KW=s=>s.replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>`<span class="kw" data-ad="${id}">${t}</span>`);
@@ -194,7 +199,7 @@ function color(){ return (REG[region]&&REG[region].verticals[vert]&&REG[region].
   REG=d.regions||{};
   $('regionTabs').innerHTML=Object.entries(REG).map(([k,r])=>`<div class="tab" data-r="${k}">${r.label}</div>`).join('');
   $('regionTabs').querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setRegion(t.dataset.r)));
-  $('localeSel').addEventListener('change',e=>{ locale=e.target.value; dir=(REG[region].dir==='rtl'&&locale==='ar')?'rtl':'ltr'; loadLineup(); });
+  $('localeSel').addEventListener('change',e=>{ locale=e.target.value; dir=REG[region].dir||'ltr'; loadLineup(); });
   $('adSel').addEventListener('change',e=>{ vi=+e.target.value; renderFb(); openVariant(); });
   const det=d.detected||{};
   const startRegion=(det.region && REG[det.region])?det.region:Object.keys(REG)[0];
@@ -209,7 +214,7 @@ function setRegion(r, prefLocale){
   $('localeSel').innerHTML=R.locales.map(l=>`<option value="${l.code}">${l.name}</option>`).join('');
   locale=(prefLocale && R.locales.some(l=>l.code===prefLocale))?prefLocale:R.locales[0].code;
   $('localeSel').value=locale;
-  dir=(R.dir==='rtl'&&locale==='ar')?'rtl':'ltr';
+  dir=R.dir||'ltr';
   setVert(Object.keys(R.verticals)[0]);
 }
 function setVert(v){
@@ -259,6 +264,7 @@ async function openVariant(){
     const {ok,d}=await api({action:'opener',region,vertical:vert,locale,hook:a.hook});
     if(!ok) throw new Error(d.error||'error');
     renderReply(bubble,d);
+    scrollAnswerTop(bubble);   // lead with the answer; the passed-in question sits above (scroll up to see)
   }catch(e){ bubble.className='bubble-a err'; bubble.textContent='⚠ '+e.message; }
   input.disabled=false; send.disabled=false; input.focus();
 }
@@ -266,6 +272,9 @@ async function openVariant(){
 function pushQ(text){ const d=document.createElement('div'); d.className='bubble-q'; d.style.background=color(); d.textContent=text; thread.appendChild(d); scroll(); }
 function addTyping(){ const b=document.createElement('div'); b.className='bubble-a'; b.innerHTML='<span class="typing"><i></i><i></i><i></i></span>'; thread.appendChild(b); scroll(); return b; }
 function scroll(){ thread.scrollTop=thread.scrollHeight; }
+// position an answer bubble near the top of the chat so the answer reads first;
+// any earlier bubbles (the question we passed in) scroll up out of view.
+function scrollAnswerTop(bubble){ try{ const tr=thread.getBoundingClientRect(), br=bubble.getBoundingClientRect(); thread.scrollTop += (br.top - tr.top) - 6; }catch(e){ scroll(); } }
 
 function renderReply(bubble,data){
   msgN++; const p='m'+msgN+'_'; const ids=[];
