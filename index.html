@@ -234,7 +234,8 @@ const $=id=>document.getElementById(id);
 const thread=$('thread'), input=$('input'), send=$('send');
 let cur=null, vi=0;                 // current campaign key + ad-variant index
 let history=[];
-const adStore={};
+const adStore={}, adByMsg={};
+const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
 let msgN=0, userTurns=0, busy=false;
 let leadOffered=false, leadDone=false;
 
@@ -329,9 +330,10 @@ async function askBackend(question,isSeed){
 function setEnabled(on){ input.disabled=!on||!cur; send.disabled=!on||!cur; if(on&&cur) input.focus(); }
 
 function registerReply(data){
- msgN++; const prefix='m'+msgN+'_';
- Object.keys(data.ads||{}).forEach(k=>{ adStore[prefix+k]=data.ads[k]; });
- const markup=(data.answer||'').replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>`[[${prefix}${id}|${t}]]`);
+ msgN++; const prefix='m'+msgN+'_'; const ids=[];
+ Object.keys(data.ads||{}).forEach(k=>{ const id=prefix+norm(k); adStore[id]=data.ads[k]; ids.push(id); });
+ adByMsg[prefix]=ids;
+ const markup=(data.answer||'').replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>`[[${prefix}${norm(id)}|${t}]]`);
  return {markup, suggest:data.suggest||[]};
 }
 
@@ -352,7 +354,10 @@ thread.addEventListener('click',e=>{
 });
 
 function pushAd(adId, query){
- const v=V[cur], ad=adStore[adId]; if(!ad) return;
+ const v=V[cur];
+ let ad=adStore[adId];
+ if(!ad){ const pm=(adId.match(/^(m\d+_)/)||[])[1]; const ids=pm?adByMsg[pm]:null; if(ids&&ids.length) ad=adStore[ids[0]]; }
+ if(!ad) return;
  track('kw_clicked');
  const q=(query||'').trim();
  const sl=Array.isArray(ad.sitelinks)?ad.sitelinks:[];
