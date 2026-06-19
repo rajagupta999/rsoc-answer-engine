@@ -167,8 +167,10 @@ function enter(key){
  $('botName').textContent=v.bot;
  thread.innerHTML=''; $('suggest').innerHTML='';
  input.disabled=false; send.disabled=false; input.focus();
- pushQ(v.seedQ);
- askBackend(v.seedQ);
+ // open by answering the exact question the Facebook ad posed (text up to the first "?")
+ const adQ = v.fbq.includes('?') ? v.fbq.replace(/\?.*$/s,'?').trim() : v.fbq.trim();
+ pushQ(adQ);
+ askBackend(adQ);
 }
 
 function pushQ(text){
