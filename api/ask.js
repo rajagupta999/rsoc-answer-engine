@@ -318,13 +318,10 @@ export async function ask(region, vkey, locale, question, history) {
 }
 
 export async function chat(question, history, locale) {
+  // privacy-first: the homepage assistant stores nothing — no question logging, no learning loop
   const lang = localeLang(locale);
   const raw = await callLLM(generalChatPrompt(lang), question, history);
-  const out = normalizeReply(parseJSON(raw));
-  const scope = `home:${String(locale || 'en').replace(/[^a-z0-9-]/gi, '').slice(0, 12)}`;
-  await logQuestion(scope, question);
-  out.suggest = await blendSuggestions(scope, question, out.suggest);
-  return out;
+  return normalizeReply(parseJSON(raw));
 }
 
 /* ---------------- public metadata for the UI ---------------- */
