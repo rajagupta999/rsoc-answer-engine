@@ -32,7 +32,7 @@
   .fb-name{font-size:14px;font-weight:700;line-height:1.15}
   .fb-meta{font-size:11px;color:var(--muted)}
   .fb-body{padding:2px 12px 11px;font-size:14px;line-height:1.45}
-  .fb-photo{position:relative;height:210px;overflow:hidden;display:flex;align-items:flex-end}
+  .fb-photo{position:relative;aspect-ratio:1.91/1;overflow:hidden;display:flex;align-items:flex-end}
   .fb-photo .scene{position:absolute;inset:0}
   .fb-photo .ai-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
   .fb-photo .ai-img.on{opacity:1}
@@ -180,7 +180,7 @@ function photoUrl(vk){
   const lbl=(REG[region]&&REG[region].verticals[vk]&&REG[region].verticals[vk].label)||vk;
   const p=PHOTO[vk]||(lbl+", professional lifestyle photography");
   const seed=Math.abs([...vk].reduce((h,ch)=>(h*31+ch.charCodeAt(0))|0,7))%100000;
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(p+', photorealistic, high quality, no text, no watermark')}?width=760&height=440&nologo=true&seed=${seed}`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(p+', photorealistic, high quality, no text, no watermark')}?width=1200&height=628&nologo=true&seed=${seed}`;
 }
 const KW=s=>s.replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>`<span class="kw" data-ad="${id}">${t}</span>`);
 const scope=()=>`${locale}:${region}:${vert}`;
@@ -196,16 +196,20 @@ function color(){ return (REG[region]&&REG[region].verticals[vert]&&REG[region].
   $('regionTabs').querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setRegion(t.dataset.r)));
   $('localeSel').addEventListener('change',e=>{ locale=e.target.value; dir=(REG[region].dir==='rtl'&&locale==='ar')?'rtl':'ltr'; loadLineup(); });
   $('adSel').addEventListener('change',e=>{ vi=+e.target.value; renderFb(); openVariant(); });
-  setRegion(Object.keys(REG)[0]);
+  const det=d.detected||{};
+  const startRegion=(det.region && REG[det.region])?det.region:Object.keys(REG)[0];
+  setRegion(startRegion, det.locale);
 })();
 
-function setRegion(r){
+function setRegion(r, prefLocale){
   region=r; const R=REG[r];
   $('regionTabs').querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
   $('vertTabs').innerHTML=Object.entries(R.verticals).map(([k,v])=>`<div class="tab" data-v="${k}">${v.label}</div>`).join('');
   $('vertTabs').querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setVert(t.dataset.v)));
   $('localeSel').innerHTML=R.locales.map(l=>`<option value="${l.code}">${l.name}</option>`).join('');
-  locale=R.locales[0].code; dir=(R.dir==='rtl'&&locale==='ar')?'rtl':'ltr';
+  locale=(prefLocale && R.locales.some(l=>l.code===prefLocale))?prefLocale:R.locales[0].code;
+  $('localeSel').value=locale;
+  dir=(R.dir==='rtl'&&locale==='ar')?'rtl':'ltr';
   setVert(Object.keys(R.verticals)[0]);
 }
 function setVert(v){
