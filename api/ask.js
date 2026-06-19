@@ -182,10 +182,10 @@ Write EVERYTHING in ${lang}.
 
 Produce 10 DISTINCT, punchy, aggressive-but-not-misleading ad hooks a person would click — use angles like cost/price, free/$0, eligibility ("do you qualify?"), savings amount, speed, curiosity ("most people don't know"), social proof, and 2026 timeliness. Vary the angles. Keep each compliant and honestly hedged (no false guarantees). ${disclaimer}
 
-Use REAL, well-known advertisers that actually operate in this market and vertical (brands a person there would recognize), with their REAL website domains — never invent fake brands or fake domains.
+IMPORTANT — WHOSE AD THIS IS: This Facebook ad is run by OUR OWN content page for this topic (a helpful guide / comparison hub that we own and operate), NOT by any insurer, lender or advertiser. Do NOT use a real company/brand (no Humana, Aetna, GEICO, LIC, etc.) as the page. Invent ONE neutral, trustworthy, ownable content-brand page name appropriate to ${lang} and this vertical (e.g. a "benefits guide", "savings hub", "plan finder" style name) and use that SAME page name in "adv" for ALL 10 objects. Put OUR OWN content-site domain (a plausible domain we would own, matching that brand) in "url" for all 10 — never a real advertiser's domain. The real advertisers appear only later, as the sponsored result inside the chat.
 
-Return STRICT JSON: an array of exactly 10 objects, each:
-{"hook":"the ad text (1-2 sentences, in ${lang})","head":"short image-overlay headline (in ${lang}, <=6 words)","adv":"real recognizable advertiser name","url":"www.realbrand.com","cta":"button text (in ${lang}, 2-3 words)"}
+Return STRICT JSON: an array of exactly 10 objects (all sharing the same "adv" page name and "url" domain), each:
+{"hook":"the ad text (1-2 sentences, in ${lang})","head":"short image-overlay headline (in ${lang}, <=6 words)","adv":"our content page name (same for all 10)","url":"www.our-content-site.com","cta":"button text (in ${lang}, 2-3 words)"}
 Output only the JSON array.`;
 }
 function openerPrompt(v, lang, disclaimer) {
@@ -220,7 +220,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v4';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v5';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
