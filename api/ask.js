@@ -23,24 +23,35 @@ export const CAMPAIGNS = {
 };
 
 export function systemPrompt(brief) {
-  return `You are the "Answer Engine" — a chat assistant embedded in a paid lead-generation funnel.
-Vertical for this conversation: ${brief}
+  return `You are a friendly, knowledgeable assistant helping someone with a real question.
+Topic area for this conversation: ${brief}
 
-Your job: answer the user's question in a genuinely helpful but sales-oriented tone that nudges them toward taking action, while surfacing high-intent commercial keywords that map to sponsored ads.
+Your FIRST priority is to be genuinely useful — answer like a helpful, trustworthy friend who happens to know this topic well, NOT like a salesperson. Earn trust; that's what keeps people engaged.
 
-RULES
-- Keep the answer to about 2-4 sentences. Conversational, warm, never pushy or alarmist.
-- Inside the answer, wrap 2-4 high-intent phrases as keyword markers using EXACTLY this syntax: [[id|the exact visible phrase]] where id is a short lowercase slug (e.g. "zero_premium"). The visible phrase must read naturally in the sentence.
-- Only mark phrases a buyer would search with commercial intent. Do not mark generic words.
-- End the answer with a brief question that invites the next step (e.g. "Want to compare options in your area?").
-- For EVERY keyword id you used, provide one realistic sponsored search ad.
-- Provide 4-6 short "people also ask" style follow-up questions.
-- Stay compliant: include soft, honest disclaimers where the brief calls for them. No guarantees, no fake urgency, nothing misleading.
+TONE
+- Lead with a clear, honest, useful answer to exactly what was asked. 2-4 short sentences.
+- Warm and natural. Do NOT end every reply with a sales question. Vary your endings; sometimes just answer.
+- No pressure, no hype, no fake urgency. If the honest answer is "it depends," say so and explain briefly.
+
+KEYWORDS (light touch)
+- ONLY when a high-intent commercial phrase already fits naturally in your answer, wrap it as [[id|the exact visible phrase]] (id = short lowercase slug). A buyer would realistically search that phrase.
+- Use 0 to 2 such markers per reply. Zero is fine and often best. NEVER force a keyword or twist the sentence to insert one.
+- The sentence must read perfectly naturally with the marker removed.
+
+ADS
+- For each keyword id you actually used, provide one realistic, compelling sponsored search ad with strong, specific commercial copy (real-sounding advertiser, benefit-led headline, concrete description, clear CTA).
+- If you used no keywords, "ads" is an empty object.
+
+FOLLOW-UPS
+- Provide 4-6 short, natural follow-up questions a curious person might ask next.
+
+COMPLIANCE
+- Include soft, honest disclaimers where the topic calls for them. No guarantees. Nothing misleading.
 
 OUTPUT
 Return STRICT JSON only — no prose, no markdown fences — with this exact shape:
 {
-  "answer": "string with [[id|phrase]] markers",
+  "answer": "string with optional [[id|phrase]] markers",
   "ads": {
     "<id>": {
       "adv": "Advertiser name",
@@ -191,7 +202,7 @@ async function blendSuggestions(campaignKey, currentQ, modelSuggest) {
   return blended.length ? blended : (modelSuggest || []);
 }
 
-export async function generate(campaignKey, question, history) {
+export async function generate(campaignKey, question, history, logIt = true) {
   const c = CAMPAIGNS[campaignKey];
   if (!c) throw new Error('Unknown campaign: ' + campaignKey);
   const provider = (process.env.PROVIDER || 'claude').toLowerCase();
@@ -199,9 +210,50 @@ export async function generate(campaignKey, question, history) {
     ? await callGemini(c.brief, question, history)
     : await callClaude(c.brief, question, history);
   const out = parseModelJSON(raw);
-  await logQuestion(campaignKey, question);
+  if (logIt) await logQuestion(campaignKey, question);   // skip the auto-fired ad opener
   out.suggest = await blendSuggestions(campaignKey, question, out.suggest);
   return out;
+}
+
+/* --------------------------------------------------------------------------
+ * Lead capture (opt-in email) and lightweight engagement counters.
+ * All writes degrade gracefully if no store is configured.
+ * ------------------------------------------------------------------------ */
+
+const KNOWN = new Set(Object.keys(CAMPAIGNS));
+const safeKey = k => (KNOWN.has(String(k)) ? String(k) : 'other');
+
+function validEmail(raw) {
+  const e = String(raw || '').trim().toLowerCase();
+  if (e.length > 120) return null;
+  return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/.test(e) ? e : null;
+}
+
+// store an opt-in email (Redis SET dedupes); returns {ok} or throws on bad input
+export async function storeLead(campaign, email) {
+  const e = validEmail(email);
+  if (!e) throw new Error('Please enter a valid email address.');
+  const k = safeKey(campaign);
+  if (redisEnabled()) {
+    try {
+      await redis(['SADD', `leads:${k}`, e]);
+      await redis(['SADD', 'leads:all', e]);
+      await redis(['HINCRBY', `stats:${k}`, 'email_optin', '1']);
+    } catch { /* don't fail the opt-in UX on a store hiccup */ }
+  }
+  return { ok: true };
+}
+
+// increment a named engagement counter for a campaign (and optional ad variant)
+export async function track(campaign, metric) {
+  try {
+    const k = safeKey(campaign);
+    const m = String(metric || '');
+    if (redisEnabled() && /^[a-z0-9:_-]{1,40}$/i.test(m)) {
+      await redis(['HINCRBY', `stats:${k}`, m, '1']);
+    }
+  } catch { /* counters are best-effort */ }
+  return { ok: true };
 }
 
 
@@ -211,9 +263,23 @@ export default async function handler(req, res) {
     let body = req.body;
     if (typeof body === 'string') body = JSON.parse(body || '{}');
     if (!body || typeof body !== 'object') body = {};
-    const { campaign, question, history } = body;
+    const action = body.action || 'ask';
+
+    if (action === 'lead') {
+      const out = await storeLead(body.campaign, body.email);
+      res.status(200).json(out);
+      return;
+    }
+    if (action === 'event') {
+      const out = await track(body.campaign, body.metric);
+      res.status(200).json(out);
+      return;
+    }
+
+    // default: chat
+    const { campaign, question, history, seed } = body;
     if (!campaign || !question) { res.status(400).json({ error: 'campaign and question required' }); return; }
-    const out = await generate(campaign, String(question).slice(0, 500), history);
+    const out = await generate(campaign, String(question).slice(0, 500), history, !seed);
     res.status(200).json(out);
   } catch (e) {
     res.status(500).json({ error: e.message });
