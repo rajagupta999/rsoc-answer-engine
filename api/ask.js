@@ -192,24 +192,30 @@ Return STRICT JSON: an array of exactly 10 objects (all sharing the same "adv" p
 {"hook":"ONE short clicky line, <=14 words, no disclaimer, in ${lang}","head":"image-overlay headline (in ${lang}, <=5 words)","adv":"our content page name (same for all 10)","url":"www.our-content-site.com","cta":"button text (in ${lang}, 2-3 words)"}
 Output only the JSON array.`;
 }
-function openerPrompt(v, lang, disclaimer) {
-  return `You are a genuinely helpful expert assistant. Your #1 priority is to give the person a REALLY useful, specific, trustworthy answer that actually helps them — concrete facts, real numbers/ranges, and the key things they need to know or watch out for, like the smartest, most helpful friend they have. Answer in ${lang} in 2-4 tight, high-value sentences (no fluff, no salesy tone).
-Monetization (the sponsored keyword + ad) is STRICTLY SECONDARY — never let it dilute the helpfulness. If the most helpful answer marks zero keywords, mark zero. A person who feels genuinely helped engages and converts far better than one who feels sold to.
+function openerPrompt(v, lang, disclaimer, full) {
+  const lengthLine = full
+    ? `Give a genuinely thorough, screen-filling FIRST answer in ${lang} — roughly 6-9 sentences across 2 short paragraphs. Really help: cover the key facts, real numbers/ranges, the main options, and what to watch out for, like the smartest, most helpful friend they have. No fluff and no salesy tone — every sentence earns its place by being useful.`
+    : `Answer in ${lang} in 2-4 tight, high-value sentences (no fluff, no salesy tone) — like the smartest, most helpful friend they have, with concrete facts and the key things to know.`;
+  const kwLine = full
+    ? `INLINE HIGH-VALUE KEYWORDS: this first answer is our prime monetization surface, so naturally weave in and mark AT LEAST 3 (3-4 ideal) genuinely relevant, high-CPC commercial keywords as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug) — the most valuable buyer phrases for THIS specific question, the kind advertisers bid the most on. ALWAYS include at least 3 distinct marked phrases on this first answer. They must read naturally as part of a genuinely helpful answer, never forced or spammy.`
+    : `INLINE KEYWORDS — sparingly: wrap at most 1-2 genuinely high-CPC, high-buyer-intent phrases as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Mark only truly high-value buyer terms; zero is fine — never force one.`;
+  return `You are a genuinely helpful expert assistant whose #1 priority is to actually help the person. ${lengthLine}
 Topic: ${v.brief}
 
-CRITICAL: Just answer the question directly. NEVER mention "the ad", "this ad", "the Facebook ad", that the person clicked anything, or describe/react to an ad ("it sounds like the ad is saying…" is forbidden). Respond as if the person simply asked you the question themselves.
+CRITICAL: Just answer the question directly. NEVER mention "the ad", "this ad", "the Facebook ad", that the person clicked anything, or describe/react to an ad. Respond as if the person simply asked you the question themselves.
 
-INLINE SPONSORED KEYWORDS — mark for DOLLAR VALUE, sparingly: inside the answer, wrap at most 1–2 phrases as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Mark ONLY genuinely high-CPC, high-buyer-intent keywords — the phrases advertisers bid the most on in Google Ads. Highest-value categories (per Google Ads / SEMrush CPC data): legal ("car accident lawyer", "mesothelioma claim"), insurance ("auto insurance quote", "buy life insurance", "Medicare Advantage plans", "compare car insurance"), finance ("debt relief program", "refinance rates", "personal loan"), home/solar ("solar panel installation", "roof replacement quote"), health ("private health insurance"). Pick the SINGLE most relevant, highest-dollar buyer phrase that fits naturally; add a 2nd only if clearly worth it. NEVER mark generic, informational, or low-value words. Fewer high-dollar marks beat many weak ones — zero is better than forcing a weak one. Each marked phrase must read naturally in the sentence.
+${kwLine}
+High-value keyword examples by category (Google Ads / SEMrush CPC): legal ("car accident lawyer", "mesothelioma claim"), insurance ("auto insurance quote", "buy life insurance", "Medicare Advantage plans", "compare car insurance"), finance ("debt relief program", "refinance rates", "personal loan"), home/solar ("solar panel installation", "roof replacement quote"), health ("private health insurance"). NEVER mark generic, informational, or low-value words. Each marked phrase must read naturally in the sentence.
 For each id used, give one realistic, compelling sponsored ad.
 
-ENGAGING FOLLOW-UPS (these become tappable buttons that load a NEW answer, like ChatGPT's suggested next questions): provide 4–6 follow-up questions in ${lang} that a curious person would genuinely want to tap next — specific, tempting, and a natural next step that pulls them deeper toward comparing/choosing/qualifying. Make them concrete and irresistible, never generic filler.
+ENGAGING FOLLOW-UPS (these become tappable buttons that load a NEW answer, like ChatGPT's suggested next questions): provide 4-6 follow-up questions in ${lang} a curious person would genuinely want to tap next — specific, tempting, natural next steps that pull them deeper toward comparing/choosing/qualifying. Never generic filler.
 
 Include a soft honest disclaimer where relevant (${disclaimer}).
 
-ADVERTISER REALISM: Use a REAL, well-known advertiser that genuinely operates in this market and vertical (a brand a person there would recognize), and put its REAL public website in both "disp" and "url". "url" must be that advertiser's real homepage as an absolute https URL (e.g. https://www.humana.com). Do NOT invent fake domains or fake brands. If unsure of a deep link, link to the brand's real homepage. The advertiser name, headline and copy must read like that brand's own ad, localized to ${lang}.
+ADVERTISER REALISM: Use a REAL, well-known advertiser that genuinely operates in this market and vertical, and put its REAL public website in both "disp" and "url" (absolute https, e.g. https://www.humana.com). Do NOT invent fake domains or fake brands. The advertiser name, headline and copy must read like that brand's own ad, localized to ${lang}.
 
 Return STRICT JSON only:
-{"answer":"... in ${lang} with optional [[id|phrase]] markers","ads":{"<id>":{"adv":"Real brand name","disp":"www.realbrand.com","url":"https://www.realbrand.com","head":"","desc":"","cta":"","sitelinks":["",""]}},"suggest":["",""]}
+{"answer":"... in ${lang} with [[id|phrase]] markers","ads":{"<id>":{"adv":"Real brand name","disp":"www.realbrand.com","url":"https://www.realbrand.com","head":"","desc":"","cta":"","sitelinks":["",""]}},"suggest":["",""]}
 Output only the JSON object.`;
 }
 
@@ -229,7 +235,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v8';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v9';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
@@ -246,7 +252,7 @@ export async function getOpener(region, vkey, locale, hook) {
   const lang = localeName(region, locale);
   const key = `opener:${CACHE_VER}:${locale}:${region}:${vkey}:${hashStr(hook)}`;
   const cached = await cacheGet(key); if (cached) return cached;
-  const raw = await callLLM(openerPrompt(v, lang, v.disclaimer), `A visitor just arrived with this on their mind: "${hook}". Give your direct, helpful first answer to what they want to know, accounting for any "$0"/free/price detail in it. Do NOT mention an ad or that they clicked anything — just answer the question itself.`);
+  const raw = await callLLM(openerPrompt(v, lang, v.disclaimer, true), `A visitor just arrived with this on their mind: "${hook}". Give your thorough, screen-filling first answer to what they want to know, accounting for any "$0"/free/price detail in it, and naturally include at least 3 high-value keyword phrases. Do NOT mention an ad or that they clicked anything — just answer the question itself.`);
   const out = normalizeReply(parseJSON(raw));
   await cacheSet(key, out);
   return out;
@@ -276,7 +282,7 @@ async function blendSuggestions(scope, currentQ, modelSuggest) {
 export async function ask(region, vkey, locale, question, history) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
-  const raw = await callLLM(openerPrompt(v, lang, v.disclaimer), question, history);
+  const raw = await callLLM(openerPrompt(v, lang, v.disclaimer, false), question, history);
   const out = normalizeReply(parseJSON(raw));
   const scope = `${locale}:${region}:${vkey}`;
   await logQuestion(scope, question);
