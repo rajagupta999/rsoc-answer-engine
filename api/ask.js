@@ -176,16 +176,19 @@ function parseJSON(raw) {
 
 /* ---------------- prompts ---------------- */
 function hooksPrompt(v, lang, disclaimer) {
-  return `You write high-CTR Facebook ad hooks for a lead-generation campaign. DEMO use; advertisers are synthetic.
+  return `You write SHORT, scroll-stopping Facebook ad hooks for a lead-gen content page. DEMO use.
 Vertical: ${v.brief}
 Write EVERYTHING in ${lang}.
 
-Produce 10 DISTINCT, punchy, aggressive-but-not-misleading ad hooks a person would click — use angles like cost/price, free/$0, eligibility ("do you qualify?"), savings amount, speed, curiosity ("most people don't know"), social proof, and 2026 timeliness. Vary the angles. Keep each compliant and honestly hedged (no false guarantees). ${disclaimer}
+THE ONLY GOAL IS THE CLICK. Each "hook" is ONE punchy line — aim for 5–12 words, hard limit ~14 words. Think top 1% Facebook ad copy: a hook that stops the thumb. Lead with the most clickable element — a number, "$0", "Do you qualify?", a surprising claim, a bold question, a curiosity gap.
+HARD RULES: no multi-sentence paragraphs. No explanations. NO disclaimers, brand names, or legal hedges inside the hook (those live on the landing page, not the ad). Stay honest — no flat-out false guarantees — but punchy curiosity beats completeness. If a hook feels like a full sentence of information, it's too long; cut it.
 
-IMPORTANT — WHOSE AD THIS IS: This Facebook ad is run by OUR OWN content page for this topic (a helpful guide / comparison hub that we own and operate), NOT by any insurer, lender or advertiser. Do NOT use a real company/brand (no Humana, Aetna, GEICO, LIC, etc.) as the page. Invent ONE neutral, trustworthy, ownable content-brand page name appropriate to ${lang} and this vertical (e.g. a "benefits guide", "savings hub", "plan finder" style name) and use that SAME page name in "adv" for ALL 10 objects. Put OUR OWN content-site domain (a plausible domain we would own, matching that brand) in "url" for all 10 — never a real advertiser's domain. The real advertisers appear only later, as the sponsored result inside the chat.
+Produce 10 DISTINCT hooks, each a different angle: $0/price, "Do you qualify?", a savings number, "in minutes", "most people don't know…", social proof, 2026 urgency, a provocative question, a myth-bust, a curiosity tease.
+
+WHOSE AD THIS IS: This Facebook ad is run by OUR OWN content page for this topic (a helpful guide / comparison hub we own), NOT by any insurer, lender or advertiser. Do NOT use a real company/brand (no Humana, Aetna, GEICO, LIC, etc.) as the page. Invent ONE neutral, trustworthy, ownable content-brand page name fitting ${lang} and this vertical (a "guide", "hub", "finder" vibe) and use that SAME page name in "adv" for ALL 10. Put OUR OWN content-site domain in "url" for all 10 — never a real advertiser's domain. Real advertisers appear only later, inside the chat.
 
 Return STRICT JSON: an array of exactly 10 objects (all sharing the same "adv" page name and "url" domain), each:
-{"hook":"the ad text (1-2 sentences, in ${lang})","head":"short image-overlay headline (in ${lang}, <=6 words)","adv":"our content page name (same for all 10)","url":"www.our-content-site.com","cta":"button text (in ${lang}, 2-3 words)"}
+{"hook":"ONE short clicky line, <=14 words, no disclaimer, in ${lang}","head":"image-overlay headline (in ${lang}, <=5 words)","adv":"our content page name (same for all 10)","url":"www.our-content-site.com","cta":"button text (in ${lang}, 2-3 words)"}
 Output only the JSON array.`;
 }
 function openerPrompt(v, lang, disclaimer) {
@@ -220,7 +223,7 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
-const CACHE_VER = 'v5';   // bump to invalidate cached hooks/openers after a prompt change
+const CACHE_VER = 'v6';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
@@ -297,7 +300,6 @@ export async function track(scope, metric) {
   try { const k = String(scope || 'all').replace(/[^a-z0-9:_-]/gi, '').slice(0, 60); const m = String(metric || ''); if (redisOn() && /^[a-z0-9:_-]{1,40}$/i.test(m)) await redis(['HINCRBY', `stats:${k}`, m, '1']); } catch {}
   return { ok: true };
 }
-
 
 // map the visitor's country (Vercel geo header) to a default region + locale
 function geoDefault(req) {
