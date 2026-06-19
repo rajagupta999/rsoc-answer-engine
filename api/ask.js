@@ -157,6 +157,8 @@ function openerPrompt(v, lang, disclaimer) {
   return `You are a friendly, genuinely helpful assistant embedded in a lead-gen chat. Answer in ${lang}, naturally and usefully first (2-4 short sentences) — like a knowledgeable friend, not a salesperson.
 Topic: ${v.brief}
 
+CRITICAL: Just answer the question directly. NEVER mention "the ad", "this ad", "the Facebook ad", that the person clicked anything, or describe/react to an ad ("it sounds like the ad is saying…" is forbidden). Respond as if the person simply asked you the question themselves.
+
 Only when a high-intent commercial phrase fits naturally, wrap it as [[id|the exact visible phrase in ${lang}]] (id = short lowercase ascii slug). Use 0-2 markers; zero is fine. Never force one.
 For each id used, give one realistic, compelling synthetic sponsored ad. Provide 4-6 natural follow-up questions in ${lang}. Include a soft honest disclaimer where relevant (${disclaimer}).
 
@@ -181,10 +183,11 @@ async function cacheSet(key, val) { try { if (redisOn()) await redis(['SET', key
 function hashStr(s) { let h = 0; s = String(s); for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 
 /* ---------------- generation (cached) ---------------- */
+const CACHE_VER = 'v2';   // bump to invalidate cached hooks/openers after a prompt change
 export async function getLineup(region, vkey, locale) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
-  const key = `hooks:${locale}:${region}:${vkey}`;
+  const key = `hooks:${CACHE_VER}:${locale}:${region}:${vkey}`;
   const cached = await cacheGet(key); if (cached) return cached;
   const raw = await callLLM(hooksPrompt(v, lang, v.disclaimer), 'Generate the 10 hooks now.');
   let arr = parseJSON(raw); if (!Array.isArray(arr)) arr = arr.hooks || [];
@@ -195,9 +198,9 @@ export async function getLineup(region, vkey, locale) {
 export async function getOpener(region, vkey, locale, hook) {
   const v = vertical(region, vkey); if (!v) throw new Error('Unknown vertical');
   const lang = localeName(region, locale);
-  const key = `opener:${locale}:${region}:${vkey}:${hashStr(hook)}`;
+  const key = `opener:${CACHE_VER}:${locale}:${region}:${vkey}:${hashStr(hook)}`;
   const cached = await cacheGet(key); if (cached) return cached;
-  const raw = await callLLM(openerPrompt(v, lang, v.disclaimer), `The Facebook ad said: "${hook}". Open the conversation by helpfully answering what it implies (respond to the FULL ad including any "$0"/free/price detail).`);
+  const raw = await callLLM(openerPrompt(v, lang, v.disclaimer), `A visitor just arrived with this on their mind: "${hook}". Give your direct, helpful first answer to what they want to know, accounting for any "$0"/free/price detail in it. Do NOT mention an ad or that they clicked anything — just answer the question itself.`);
   const out = normalizeReply(parseJSON(raw));
   await cacheSet(key, out);
   return out;
