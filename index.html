@@ -316,10 +316,19 @@ function pushAd(adId, query){
       <div class="g-top"><div class="g-fav" style="background:${color()}">${(ad.adv||'?')[0]}</div><div><div class="g-adv">${ad.adv||''}</div><div class="g-sub"><b>Sponsored</b> · ${ad.disp||''}</div></div></div>
       <div class="ad-head" data-go="1">${ad.head||''}</div><div class="ad-desc">${ad.desc||''}</div>
       ${sl.length?`<div class="g-sitelinks">${sl.map(s=>`<a data-go="1">${s}</a>`).join('')}</div>`:''}`;
-    card.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>openLanding(ad)));
+    card.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>openAd(ad)));
     scroll();
   },460);
 }
+// click-through to the REAL advertiser site, like a real ad. In production the
+// AFS feed supplies the actual auctioned destination + click tracking.
+function adHttps(ad){
+  let u=String((ad&&(ad.url||ad.disp))||'').trim();
+  if(!u) return '';
+  if(!/^https?:\/\//i.test(u)) u='https://'+u.replace(/^\/+/,'');
+  try{ return new URL(u).origin + (new URL(u).pathname||''); }catch(e){ return u; }
+}
+function openAd(ad){ track('lp_click'); const u=adHttps(ad); if(u){ window.open(u,'_blank','noopener,noreferrer'); } else { openLanding(ad); } }
 function openLanding(ad){
   const L=$('landing'); const c=color();
   L.dir=dir; L.innerHTML=`<div class="lbar"><span class="lback">‹</span><span class="lurl">🔒 ${ad.disp||ad.url||''}</span></div>
