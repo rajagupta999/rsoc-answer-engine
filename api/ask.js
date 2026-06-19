@@ -219,6 +219,28 @@ Return STRICT JSON only:
 Output only the JSON object.`;
 }
 
+/* ---------------- general homepage assistant (ChatGPT-style, topic-agnostic) ---------------- */
+function localeLang(locale) {
+  const c = String(locale || 'en').toLowerCase();
+  if (c.startsWith('fr')) return 'French';
+  if (c.startsWith('de')) return 'German';
+  if (c.startsWith('ja')) return 'Japanese';
+  if (c.startsWith('hi')) return 'Hindi';
+  if (c.startsWith('es')) return 'Spanish';
+  return 'English';
+}
+function generalChatPrompt(lang) {
+  return `You are Questions Answer, a friendly, highly knowledgeable AI assistant. Answer the user's question genuinely, clearly and usefully in ${lang} — accuracy and real helpfulness come FIRST, like the best of ChatGPT. Keep it focused: a few short paragraphs; use a short list only when it genuinely helps.
+
+ONLY when the question has real commercial/buyer intent (insurance, loans, mortgages, solar, legal help, medical plans, home services, travel deals, etc.), naturally mark 1-3 of the highest-value commercial keywords using EXACTLY this syntax, ALWAYS with an id and the visible phrase separated by a pipe: [[id|the exact visible phrase in ${lang}]] where id is a short lowercase ascii slug. NEVER write a marker without the "id|" part. These become sponsored results. Prefer high-CPC buyer phrases (legal, insurance, finance, solar, health). If the question is informational or non-commercial, mark ZERO — never force a keyword.
+For each marked id, provide one realistic sponsored ad from a REAL, well-known advertiser with its REAL https homepage in "url" and "disp".
+Also give 3-5 natural follow-up questions the user might want to ask next.
+
+Return STRICT JSON only:
+{"answer":"your helpful answer in ${lang}, with optional [[id|phrase]] markers","ads":{"<id>":{"adv":"Real brand","disp":"www.brand.com","url":"https://www.brand.com","head":"","desc":"","cta":"","sitelinks":["",""]}},"suggest":["question 1","question 2"]}
+Output only the JSON object.`;
+}
+
 /* ---------------- Upstash (cache + counters + leads) ---------------- */
 const MIN_COUNT = 3, MAX_SET = 200;
 function redisUrl() { return process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || ''; }
@@ -295,6 +317,16 @@ export async function ask(region, vkey, locale, question, history) {
   return out;
 }
 
+export async function chat(question, history, locale) {
+  const lang = localeLang(locale);
+  const raw = await callLLM(generalChatPrompt(lang), question, history);
+  const out = normalizeReply(parseJSON(raw));
+  const scope = `home:${String(locale || 'en').replace(/[^a-z0-9-]/gi, '').slice(0, 12)}`;
+  await logQuestion(scope, question);
+  out.suggest = await blendSuggestions(scope, question, out.suggest);
+  return out;
+}
+
 /* ---------------- public metadata for the UI ---------------- */
 export function publicRegions() {
   const out = {};
@@ -355,6 +387,11 @@ export default async function handler(req, res) {
     if (action === 'opener') {
       if (!region || !vertical || !locale || !hook) { res.status(400).json({ error: 'region, vertical, locale, hook required' }); return; }
       res.status(200).json(await getOpener(region, vertical, locale, String(hook).slice(0, 300))); return;
+    }
+    if (action === 'chat') {
+      if (!question) { res.status(400).json({ error: 'question required' }); return; }
+      const loc = locale || geoDefault(req).locale;
+      res.status(200).json(await chat(String(question).slice(0, 1000), history, loc)); return;
     }
     if (action === 'lead') { res.status(200).json(await storeLead(scope, email)); return; }
     if (action === 'event') { res.status(200).json(await track(scope, metric)); return; }
