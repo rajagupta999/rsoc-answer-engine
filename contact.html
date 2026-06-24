@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — QuestionsAnswer.com</title>
+<meta name="description" content="Get in touch with QuestionsAnswer.com.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMzRjNzU5Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDA3MWUzIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIzMiIgeT0iNDQiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjMxIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQTwvdGV4dD48L3N2Zz4K">
+<meta name="theme-color" content="#ffffff">
+<style>
+  :root{--fg:#1d1d1f;--muted:#6e6e73;--line:#d2d2d7;--line2:#e8e8ed;--accent:#0071e3;--accent-dk:#0060c0;--trust:#1a8a4f;--bg:#fff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,"Apple Color Emoji",sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+  header.top{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line2);padding:0 22px;height:54px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:var(--fg)}
+  .logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#34c759,#0071e3);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;letter-spacing:.2px}
+  .top .home{font-size:13px;color:var(--muted)}
+  main{max-width:620px;margin:0 auto;padding:40px 22px 8px}
+  h1{font-size:34px;font-weight:600;letter-spacing:-.03em;margin:0 0 8px}
+  .lead{font-size:17px;color:var(--muted);line-height:1.55;margin:0 0 8px}
+  .lead a{font-weight:500}
+  .card{margin:24px 0 0;border:1px solid var(--line2);border-radius:18px;padding:24px;box-shadow:0 2px 14px rgba(0,0,0,.04)}
+  .form{display:flex;flex-direction:column;gap:15px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  .field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;outline:none;background:#fff;transition:.15s}
+  .field input:focus,.field textarea:focus{border-color:var(--accent)}
+  .field textarea{min-height:130px;resize:vertical}
+  .submit{align-self:flex-start;border:none;background:var(--accent);color:#fff;font-weight:600;font-size:15px;padding:12px 26px;border-radius:980px;cursor:pointer;transition:.15s}
+  .submit:hover{background:var(--accent-dk)}
+  .submit:disabled{background:#c9ccd2;cursor:default}
+  .formmsg{font-size:14px;margin-top:2px;min-height:18px}
+  .ok{color:var(--trust);font-weight:500}.bad{color:#b3261e}
+  .alt{font-size:14px;color:var(--muted);margin-top:20px}
+  .site-foot{max-width:760px;margin:44px auto 0;padding:24px 22px 44px;border-top:1px solid var(--line2);text-align:center}
+  .site-foot nav{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;margin-bottom:12px}
+  .site-foot nav a{font-size:13px;color:var(--muted)}
+  .site-foot p{font-size:12px;color:#86868b;line-height:1.6;margin:0}
+  @media(max-width:600px){h1{font-size:28px}main{padding:28px 18px 6px}.card{padding:18px}}
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/" style="text-decoration:none"><span class="logo">QA</span>QuestionsAnswer.com</a>
+    <a class="home" href="/">← Home</a>
+  </header>
+  <main>
+    <h1>Contact us</h1>
+    <p class="lead">Have a question, some feedback, or a privacy request? Send us a note below, or email <a href="mailto:support@questionsanswer.com">support@questionsanswer.com</a> directly. We read everything.</p>
+
+    <div class="card">
+      <form class="form" id="cform" novalidate>
+        <div class="field">
+          <label for="cname">Name <span style="color:#9aa0a6;font-weight:400">(optional)</span></label>
+          <input id="cname" type="text" autocomplete="name" placeholder="Your name">
+        </div>
+        <div class="field">
+          <label for="cemail">Email</label>
+          <input id="cemail" type="email" autocomplete="email" placeholder="you@email.com" required>
+        </div>
+        <div class="field">
+          <label for="cmsg">Message</label>
+          <textarea id="cmsg" placeholder="How can we help?" required></textarea>
+        </div>
+        <button class="submit" id="csend" type="submit">Send message</button>
+        <div class="formmsg" id="cmsgout"></div>
+      </form>
+      <p class="alt">Prefer email? Reach us at <a href="mailto:support@questionsanswer.com">support@questionsanswer.com</a>.</p>
+    </div>
+  </main>
+  <footer class="site-foot">
+    <nav>
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/demo">Ad demo</a>
+    </nav>
+    <p>© 2026 QuestionsAnswer.com · All rights reserved.<br>Demo — for demonstration purposes only · not a live service.</p>
+  </footer>
+<script>
+  const $=id=>document.getElementById(id);
+  const form=$('cform'), out=$('cmsgout'), btn=$('csend');
+  const emailRe=/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const name=$('cname').value.trim(), email=$('cemail').value.trim(), message=$('cmsg').value.trim();
+    out.className='formmsg';
+    if(!emailRe.test(email)){ out.textContent='Please enter a valid email address.'; out.className='formmsg bad'; $('cemail').focus(); return; }
+    if(message.length<2){ out.textContent='Please add a short message.'; out.className='formmsg bad'; $('cmsg').focus(); return; }
+    btn.disabled=true; btn.textContent='Sending…'; out.textContent='';
+    try{
+      const r=await fetch('/api/contact',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,email,message})});
+      if(r.ok){ form.reset(); out.textContent='✓ Thanks — your message was sent. We’ll get back to you at the email you provided.'; out.className='formmsg ok'; btn.textContent='Send message'; }
+      else { const d=await r.json().catch(()=>({})); out.textContent=(d&&d.error)||'Something went wrong. Please email us directly.'; out.className='formmsg bad'; btn.disabled=false; btn.textContent='Send message'; }
+    }catch(err){ out.textContent='Network error. Please email support@questionsanswer.com instead.'; out.className='formmsg bad'; btn.disabled=false; btn.textContent='Send message'; }
+  });
+</script>
+</body>
+</html>
