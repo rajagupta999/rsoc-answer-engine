@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuestionsAnswer — Ad demo 3 (article landing)</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMzRjNzU5Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDA3MWUzIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIzMiIgeT0iNDQiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjMxIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQTwvdGV4dD48L3N2Zz4K">
+<meta name="theme-color" content="#ffffff">
+<style>
+  :root{--fg:#1d1d1f;--muted:#6e6e73;--line:#d2d2d7;--line2:#e8e8ed;--bg:#fff;--soft:#f5f5f7;--accent:#0071e3;--accent-dk:#0060c0;--trust:#1a8a4f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--soft);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,sans-serif;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  .bar{background:#fff;border-bottom:1px solid var(--line2);padding:12px 20px}
+  .bar .in{max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--fg)}
+  .blogo{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#34c759,#0071e3);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px}
+  .tag{font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:#8a6d00;background:#fff7e6;border:1px solid #ffe2a8;border-radius:980px;padding:3px 10px}
+  .ctrls{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-left:auto}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px}
+  .tab{border:1px solid var(--line);background:#fff;border-radius:980px;padding:5px 12px;font-size:12.5px;font-weight:500;color:var(--fg);cursor:pointer;transition:.15s}
+  .tab.active{border-color:var(--accent);color:var(--accent);background:#f0f6ff}
+  select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:500;color:var(--fg);cursor:pointer;max-width:340px}
+  .btn{border:none;background:var(--accent);color:#fff;font-weight:600;font-size:12.5px;padding:7px 14px;border-radius:980px;cursor:pointer}
+  .note{max-width:1080px;margin:8px auto 0;font-size:11.5px;color:#9aa0a6}
+  /* publisher masthead */
+  .mast{border-bottom:1px solid var(--line2);padding:12px 22px 0}
+  .mast .top{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;color:var(--fg)}
+  .catnav{display:flex;flex-wrap:wrap;gap:2px 4px;margin:10px 0 0;font-size:12.5px}
+  .catnav span{padding:8px 11px;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+  .catnav span:hover,.catnav span.on{color:var(--fg);border-bottom-color:var(--accent)}
+  main{max-width:720px;margin:22px auto;background:#fff;border:1px solid var(--line2);border-radius:18px;overflow:hidden;box-shadow:0 4px 26px rgba(0,0,0,.05)}
+  .art{padding:6px 34px 26px}
+  .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);margin-top:22px}
+  h1{font-size:31px;font-weight:700;letter-spacing:-.02em;line-height:1.16;margin:6px 0 8px}
+  .byline{font-size:12.5px;color:var(--muted);margin:0 0 16px;border-bottom:1px solid var(--line2);padding-bottom:14px}
+  .intro{font-size:16.5px;line-height:1.62;margin:0 0 16px;color:#1d1d1f}
+  .hero{width:100%;aspect-ratio:1200/628;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#dfe8f5,#eef3fb);margin:0 0 18px;position:relative}
+  .hero img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+  .hero img.on{opacity:1}
+  .art h2{font-size:20.5px;font-weight:650;letter-spacing:-.01em;margin:28px 0 9px;line-height:1.3}
+  .art p{font-size:15.5px;line-height:1.7;color:#2b2b2f;margin:0 0 14px}
+  .kw{color:var(--accent);font-weight:600;cursor:pointer;background:linear-gradient(transparent 60%,#cfe4ff 60%);border-radius:2px;padding:0 1px}
+  .kw:after{content:"↗";font-size:9px;vertical-align:super;opacity:.7;margin-left:1px}
+  .spon{margin:18px 0 20px;display:flex;flex-direction:column;gap:12px}
+  .unit{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+  .unit-h{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#86868b;padding:9px 14px 7px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:6px}
+  .unit-h:before{content:"Ad";font-size:9px;font-weight:700;color:#8a6d00;background:#fff7e6;border:1px solid #ffe2a8;border-radius:4px;padding:1px 4px}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px}
+  .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:980px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;background:#fff;transition:.14s}
+  .pill:hover{background:#f0f6ff;border-color:var(--accent)}
+  .pill svg{flex:none;opacity:.6}
+  .rm{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--line2);cursor:pointer;transition:.14s}
+  .rm:last-child{border-bottom:none}
+  .rm:hover{background:#f7f9fc}
+  .rm-ic{flex:none;width:40px;height:40px;border-radius:9px}
+  .rm-tx b{display:block;font-size:14px;font-weight:600;color:var(--fg);line-height:1.35}
+  .rm-tx span{font-size:12px;color:var(--muted)}
+  .tbl-wrap{margin:22px 0;border:1px solid var(--line2);border-radius:14px;overflow:hidden}
+  .tbl-cap{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:#86868b;padding:10px 14px;background:#fafafc;border-bottom:1px solid var(--line2)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line2);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td .off{font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap}
+  .disc{font-size:12.5px;color:#9aa0a6;font-style:italic;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:13px 0;margin:6px 0 18px}
+  .rel-h{font-size:13px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin:28px 0 12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{border:1px solid var(--line2);border-radius:13px;overflow:hidden;cursor:pointer;background:#fff;transition:.15s}
+  .card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08);transform:translateY(-1px)}
+  .card .thmb{aspect-ratio:16/9}
+  .card .clbl{padding:9px 13px 0;font-size:10.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--accent)}
+  .card .ct{padding:3px 13px 4px;font-size:13.5px;font-weight:600;color:var(--fg);line-height:1.35}
+  .card .ce{padding:0 13px 12px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .sk{height:14px;border-radius:6px;background:linear-gradient(90deg,#eef0f3,#f6f7f9,#eef0f3);background-size:200% 100%;animation:sh 1.2s infinite;margin:0 0 11px}
+  @keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+  .site-foot{max-width:720px;margin:14px auto 40px;padding:20px 22px;text-align:center}
+  .site-foot nav{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;margin-bottom:10px}
+  .site-foot nav a{font-size:13px;color:var(--muted)}
+  .site-foot p{font-size:12px;color:#9aa0a6;margin:0}
+  @media(max-width:600px){.art{padding:2px 18px 20px}h1{font-size:26px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div class="in">
+      <a class="brand" href="/"><span class="blogo">QA</span> QuestionsAnswer.com</a>
+      <span class="tag">Ad demo 3 · Article landing</span>
+      <div class="ctrls">
+        <div class="tabs" id="regionTabs"></div>
+        <div class="tabs" id="vertTabs"></div>
+        <select id="localeSel"></select>
+        <select id="adSel"></select>
+        <button class="btn" id="regenBtn" type="button">↻ New article</button>
+      </div>
+    </div>
+    <div class="note">Organic "article" landing pattern (RSOC / AFS): a topic headline, a lead intro, the sponsored keyword + Read-more units high on the page, then a full multi-section article with a comparison table. Sponsored slots and article body are AI-generated, localized placeholders standing in for the live AdSense for Search feed.</div>
+  </div>
+
+  <main>
+    <div class="mast">
+      <div class="top"><span class="blogo">QA</span> QuestionsAnswer <span style="font-weight:400;color:#9aa0a6;font-size:12px">· Consumer Guides</span></div>
+      <div class="catnav" id="catnav"></div>
+    </div>
+    <div class="art" id="art"></div>
+  </main>
+
+  <footer class="site-foot">
+    <nav>
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Service</a>
+      <a href="/contact.html">Contact</a>
+      <a href="/demo">Ad demo</a>
+    </nav>
+    <p>© 2026 QuestionsAnswer.com · Demo — for demonstration purposes only · not a live service.</p>
+  </footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const art=$('art');
+let REG={}, region=null, vert=null, locale=null, dir='ltr', variants=[], vi=0, msgN=0, adStore={}, gen=0;
+const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const scope=()=>`${locale}:${region}:${vert}`;
+function api(body){ return fetch('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json().then(d=>({ok:r.ok,d}))); }
+function track(metric){ try{ api({action:'event',scope:scope(),metric}); }catch(e){} }
+function vlabel(){ return (REG[region]&&REG[region].verticals[vert]&&REG[region].verticals[vert].label)||'This topic'; }
+function heroUrl(topic){ const seed=Math.abs([...(region+vert+topic)].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,7))%100000; return `https://image.pollinations.ai/prompt/${encodeURIComponent(topic+', editorial magazine photography, photorealistic, no text, no watermark')}?width=1200&height=628&nologo=true&seed=${seed}`; }
+const MAG=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="2.4"><circle cx="10.5" cy="10.5" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>`;
+function grad(q){ const n=Math.abs([...q].reduce((h,c)=>(h*31+c.charCodeAt(0))|0,7)); const a=n%360,b=(a+42)%360; return `linear-gradient(135deg,hsl(${a} 58% 54%),hsl(${b} 62% 44%))`; }
+function titleize(t){ t=String(t).replace(/\?+$/,'').trim(); return t.charAt(0).toUpperCase()+t.slice(1); }
+function headlineFor(base){ return `${base}: 2026 Cost & Options Overview`; }
+function relatedTitles(base){ return [
+  `${base}: Complete 2026 Guide`,
+  `${base} Costs Explained for 2026`,
+  `Comparing ${base} Options in 2026`,
+  `${base}: What to Know Before You Choose`,
+  `How to Save on ${base} in 2026`,
+  `${base}: Pros, Cons & Pricing`
+]; }
+// keyword markup for inline body text
+function KWH(s){ let out='',last=0,m; const re=/\[\[(.+?)\|(.+?)\]\]/g; while((m=re.exec(s))){ out+=esc(s.slice(last,m.index)); out+=`<span class="kw" data-ad="${esc(m[1])}" data-q="${esc(m[2])}">${esc(m[2])}</span>`; last=re.lastIndex; } out+=esc(s.slice(last)); return out; }
+function paras(t){ const ps=String(t).split(/\n{2,}|\n/).map(s=>s.trim()).filter(s=>s.length>1); if(ps.length>1) return ps; const s=String(t).replace(/\s+/g,' ').trim().match(/[^.!?]+[.!?]+/g)||[t]; const out=[]; for(let i=0;i<s.length;i+=3) out.push((s.slice(i,i+3).join('')).trim()); return out.filter(Boolean); }
+
+/* ---- boot ---- */
+(async()=>{
+  const {d}=await api({action:'regions'});
+  REG=d.regions||{};
+  $('regionTabs').innerHTML=Object.entries(REG).map(([k,r])=>`<div class="tab" data-r="${k}">${r.label}</div>`).join('');
+  $('regionTabs').querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setRegion(t.dataset.r)));
+  $('localeSel').addEventListener('change',e=>{ locale=e.target.value; dir=(REG[region]&&REG[region].dir)||'ltr'; loadLineup(); });
+  $('adSel').addEventListener('change',e=>{ vi=+e.target.value; loadArticle(); });
+  $('regenBtn').addEventListener('click',loadArticle);
+  const det=d.detected||{};
+  const startRegion=(det.region && REG[det.region])?det.region:Object.keys(REG)[0];
+  setRegion(startRegion, det.locale);
+})();
+
+function setRegion(r, prefLocale){
+  region=r; const R=REG[r];
+  $('regionTabs').querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.r===r));
+  $('vertTabs').innerHTML=Object.entries(R.verticals).map(([k,v])=>`<div class="tab" data-v="${k}">${v.label}</div>`).join('');
+  $('vertTabs').querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setVert(t.dataset.v)));
+  $('catnav').innerHTML=Object.entries(R.verticals).map(([k,v])=>`<span data-v="${k}">${esc(v.label)}</span>`).join('');
+  $('catnav').querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>setVert(s.dataset.v)));
+  $('localeSel').innerHTML=R.locales.map(l=>`<option value="${l.code}">${l.name}</option>`).join('');
+  locale=(prefLocale && R.locales.some(l=>l.code===prefLocale))?prefLocale:R.locales[0].code;
+  $('localeSel').value=locale; dir=R.dir||'ltr';
+  setVert(Object.keys(R.verticals)[0]);
+}
+function setVert(v){
+  vert=v;
+  $('vertTabs').querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.v===v));
+  $('catnav').querySelectorAll('span').forEach(s=>s.classList.toggle('on',s.dataset.v===v));
+  loadLineup();
+}
+
+async function loadLineup(){
+  art.innerHTML=skeleton();
+  const {d}=await api({action:'lineup',region,vertical:vert,locale});
+  variants=d.variants||[]; vi=0;
+  $('adSel').innerHTML=variants.map((a,i)=>`<option value="${i}">${a.adv} — ${(a.head||a.hook||'').slice(0,40)}…</option>`).join('');
+  loadArticle();
+}
+
+async function loadArticle(){
+  const a=variants[vi]; if(!a) return;
+  art.innerHTML=skeleton(); art.dir=dir; window.scrollTo({top:0});
+  track('visit'); track('adv:'+a.id);
+  try{
+    const {ok,d}=await api({action:'opener',region,vertical:vert,locale,hook:a.hook});
+    if(!ok) throw new Error(d.error||'error');
+    renderArticle(d, headlineFor(vlabel()));
+  }catch(e){ art.innerHTML='<p class="intro">⚠ '+esc(e.message)+'</p>'; }
+}
+async function regen(topic){
+  art.innerHTML=skeleton(); art.dir=dir; window.scrollTo({top:0,behavior:'smooth'});
+  try{
+    const {ok,d}=await api({action:'ask',region,vertical:vert,locale,question:topic,history:[]});
+    if(!ok) throw new Error(d.error||'error');
+    renderArticle(d, titleize(topic));
+  }catch(e){ art.innerHTML='<p class="intro">⚠ '+esc(e.message)+'</p>'; }
+}
+
+function renderArticle(d, headline){
+  const my=++gen; msgN++; const p='m'+msgN+'_';
+  adStore={}; Object.keys(d.ads||{}).forEach(k=>{ adStore[p+norm(k)]=d.ads[k]; });
+  const raw=(d.answer||'').replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>`[[${p}${norm(id)}|${t}]]`);
+  const kws=[], seen={};
+  raw.replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>{ const key=t.trim().toLowerCase(); if(key&&!seen[key]){ seen[key]=1; kws.push({id,t:t.trim()}); } return m; });
+  const bodyParas=paras(raw.replace(/\[\[(.+?)\|(.+?)\]\]/g,(m,id,t)=>`[[${id}|${t}]]`));
+  const intro=bodyParas[0]||'';
+  const bridge=bodyParas[1]||'';
+  const cat=vlabel();
+  const base=cat.replace(/\s*\(.+?\)\s*/g,'').trim();
+  const suggest=(d.suggest||[]).map(s=>String(s).trim()).filter(Boolean);
+  const sectionQs=(suggest.length?suggest:relatedTitles(base)).slice(0,4);
+  const rmTitles=relatedTitles(base);
+  const today=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+
+  // sponsored stack: keyword pills + READ MORE
+  let spon='<div class="spon">';
+  if(kws.length){ spon+=`<div class="unit"><div class="unit-h">Related searches</div><div class="pills">`+kws.map(k=>`<span class="pill" data-ad="${esc(k.id)}" data-q="${esc(k.t)}">${MAG}${esc(k.t)}</span>`).join('')+`</div></div>`; }
+  spon+=`<div class="unit"><div class="unit-h">Read more</div>`+rmTitles.slice(0,4).map(t=>`<div class="rm" data-topic="${esc(t)}"><div class="rm-ic" style="background:${grad(t)}"></div><div class="rm-tx"><b>${esc(t)}</b><span>Sponsored · in-depth guide ↗</span></div></div>`).join('')+`</div></div>`;
+
+  // section shells (each H2 = a real high-intent question; body fetched per section)
+  const secHtml=sectionQs.map((q,i)=>`<section id="${p}s${i}"><h2>${esc(titleize(q))}</h2><div class="sk"></div><div class="sk" style="width:92%"></div><div class="sk" style="width:70%"></div></section>`).join('');
+
+  // comparison table from sponsored advertisers
+  const ads=Object.entries(adStore);
+  let table='';
+  if(ads.length>=2){
+    table=`<div class="tbl-wrap"><div class="tbl-cap">At a glance · sponsored providers</div><table><thead><tr><th>Provider</th><th>What they offer</th><th>Est. cost (2026)</th></tr></thead><tbody>`+
+      ads.slice(0,4).map(([id,ad])=>`<tr><td><b>${esc(ad.adv||'')}</b></td><td>${esc((ad.head||ad.desc||'').slice(0,90))}</td><td>${esc(ad.price||'Varies · request a quote')} <span class="off" data-ad="${esc(id)}" data-q="${esc(ad.adv||'')}">→</span></td></tr>`).join('')+
+      `</tbody></table></div>`;
+  }
+
+  const concl=`In summary, ${base.toLowerCase()} in 2026 comes down to your specific situation, the options you compare, and the total cost once every factor is included. Use the comparison above as a starting point, request itemized quotes, and verify current pricing before you decide.`;
+
+  const gridItems=rmTitles.slice(2).concat(rmTitles).slice(0,4);
+  const grid=`<div class="rel-h">More on ${esc(cat)}</div><div class="grid">`+gridItems.map(t=>`<div class="card" data-topic="${esc(t)}"><div class="thmb" style="background:${grad(t)}"></div><div class="clbl">${esc(cat)}</div><div class="ct">${esc(t)}</div><div class="ce">Read article →</div></div>`).join('')+`</div>`;
+
+  art.innerHTML=`
+    <div class="eyebrow">${esc(cat)}</div>
+    <h1>${esc(headline)}</h1>
+    <div class="byline">By Consumer Team · ${esc(today)} · ${esc(cat)}</div>
+    <p class="intro">${KWH(intro)}</p>
+    <div class="hero"><img src="${heroUrl(headline)}" alt="" referrerpolicy="no-referrer" onload="this.classList.add('on')" onerror="this.remove()"></div>
+    ${spon}
+    ${bridge?`<p>${KWH(bridge)}</p>`:''}
+    ${secHtml}
+    ${table}
+    <div class="disc">Prices, rates and estimates are illustrative and may change over time. Sponsored results are labeled. Independent research is advised before making financial decisions. This article is for general information only.</div>
+    <p>${esc(concl)}</p>
+    ${grid}`;
+
+  // fetch each section body in parallel (server-cached); fill as they resolve
+  sectionQs.forEach(async(q,i)=>{
+    try{
+      const {ok,d2}=await api({action:'ask',region,vertical:vert,locale,question:q,history:[]}).then(r=>({ok:r.ok,d2:r.d}));
+      if(my!==gen) return; const el=document.getElementById(p+'s'+i); if(!el) return;
+      const txt=(ok&&d2&&d2.answer)?d2.answer:'';
+      const ps=paras(txt).slice(0,2);
+      el.innerHTML=`<h2>${esc(titleize(q))}</h2>`+(ps.length?ps.map(x=>`<p>${KWH(x)}</p>`).join(''):`<p>${esc('Details vary by provider, plan and region — compare itemized quotes before deciding.')}</p>`);
+    }catch(e){}
+  });
+}
+
+function skeleton(){ return `<div class="eyebrow">&nbsp;</div><div class="sk" style="width:80%;height:28px"></div><div class="sk" style="width:40%"></div><div class="sk"></div><div class="sk"></div><div class="sk" style="width:70%"></div><div class="sk" style="height:180px;border-radius:14px"></div><div class="sk"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:60%"></div>`; }
+
+// delegated clicks
+art.addEventListener('click',e=>{
+  const spon=e.target.closest('.pill,.off'); if(spon){ pushAd(spon.dataset.ad, spon.dataset.q); return; }
+  const inline=e.target.closest('.kw'); if(inline){ pushAd(inline.dataset.ad, inline.dataset.q||inline.textContent.trim()); return; }
+  const more=e.target.closest('.rm,.card'); if(more){ track('readmore_click'); regen(more.dataset.topic); return; }
+});
+function pushAd(adId, query){ let ad=adStore[adId]; if(!ad){ const vals=Object.values(adStore); ad=vals[0]; } if(!ad) return; track('kw_clicked'); openAd(ad); }
+function adHttps(ad){ let u=String((ad&&(ad.url||ad.disp))||'').trim(); if(!u) return ''; if(!/^https?:\/\//i.test(u)) u='https://'+u.replace(/^\/+/,''); try{ return new URL(u).origin+(new URL(u).pathname||''); }catch(e){ return u; } }
+function openAd(ad){ track('lp_click'); const u=adHttps(ad); if(u) window.open(u,'_blank','noopener,noreferrer'); }
+</script>
+</body>
+</html>
