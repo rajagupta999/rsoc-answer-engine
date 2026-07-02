@@ -1,0 +1,15 @@
+{
+  "rewrites": [
+    { "source": "/demo", "destination": "/demo.html" },
+    { "source": "/demo2", "destination": "/demo2.html" },
+    { "source": "/demo3", "destination": "/demo3.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    }
+  ]
+}
